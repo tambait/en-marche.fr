@@ -15,6 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SearchController extends Controller
 {
@@ -22,8 +23,12 @@ class SearchController extends Controller
      * @Route("/evenements", name="app_search_events", methods={"GET"})
      * @Route("/evenements/categorie/{slug}", name="app_search_events_by_category")
      */
-    public function searchEventsAction(Request $request, string $slug = null)
-    {
+    public function searchEventsAction(
+        Request $request,
+        SearchParametersFilter $filter,
+        SearchResultsProvidersManager $manager,
+        string $slug = null
+    ) {
         if ($slug) {
             if ($category = $this->getDoctrine()->getRepository(EventCategory::class)->findOneBySlug($slug)) {
                 $request->query->set(SearchParametersFilter::PARAMETER_TYPE, SearchParametersFilter::TYPE_EVENTS);
@@ -38,14 +43,14 @@ class SearchController extends Controller
             $request->query->set(SearchParametersFilter::PARAMETER_TYPE, SearchParametersFilter::TYPE_EVENTS);
         }
 
-        $search = $this->get(SearchParametersFilter::class)->handleRequest($request);
+        $search = $filter->handleRequest($request);
         $user = $this->getUser();
         if ($user && \in_array(EntityPostAddressTrait::class, class_uses($user))) {
             $search->setCity(sprintf('%s, %s', $user->getCityName(), $user->getCountryName()));
         }
 
         try {
-            $results = $this->get(SearchResultsProvidersManager::class)->find($search);
+            $results = $manager->find($search);
         } catch (GeocodingException $exception) {
             $errors[] = $this->get('translator')->trans('search.geocoding.exception');
         }
@@ -61,18 +66,21 @@ class SearchController extends Controller
     /**
      * @Route("/comites", name="app_search_committees", methods={"GET"})
      */
-    public function searchCommitteesAction(Request $request)
-    {
+    public function searchCommitteesAction(
+        Request $request,
+        SearchParametersFilter $filter,
+        SearchResultsProvidersManager $manager
+    ): Response {
         $request->query->set(SearchParametersFilter::PARAMETER_TYPE, SearchParametersFilter::TYPE_COMMITTEES);
 
-        $search = $this->get(SearchParametersFilter::class)->handleRequest($request);
+        $search = $filter->handleRequest($request);
         $user = $this->getUser();
         if ($user && \in_array(EntityPostAddressTrait::class, class_uses($user))) {
             $search->setCity(sprintf('%s, %s', $user->getCityName(), $user->getCountryName()));
         }
 
         try {
-            $results = $this->get(SearchResultsProvidersManager::class)->find($search);
+            $results = $manager->find($search);
         } catch (GeocodingException $exception) {
             $errors[] = $this->get('translator')->trans('search.geocoding.exception');
         }
@@ -95,14 +103,18 @@ class SearchController extends Controller
     /**
      * @Route("/recherche", name="app_search", methods={"GET"})
      */
-    public function resultsAction(Request $request)
-    {
-        $search = $this->get(SearchParametersFilter::class)->handleRequest($request);
+    public function resultsAction(
+        Request $request,
+        SearchParametersFilter $filter,
+        SearchResultsProvidersManager $manager,
+        TranslatorInterface $translator
+    ): Response {
+        $search = $filter->handleRequest($request);
 
         try {
-            $results = $this->get(SearchResultsProvidersManager::class)->find($search);
+            $results = $manager->find($search);
         } catch (GeocodingException $exception) {
-            $errors[] = $this->get('translator')->trans('search.geocoding.exception');
+            $errors[] = $translator->trans('search.geocoding.exception');
         }
 
         return $this->render('search/results.html.twig', [

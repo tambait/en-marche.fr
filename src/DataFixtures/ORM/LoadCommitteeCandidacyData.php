@@ -8,15 +8,23 @@ use App\Entity\CommitteeCandidacy;
 use App\Image\ImageManager;
 use App\ValueObject\Genders;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-class LoadCommitteeCandidacyData extends Fixture
+class LoadCommitteeCandidacyData extends Fixture implements DependentFixtureInterface
 {
     private const CANDIDACY_UUID_1 = '9780b1ca-79c1-4f53-babd-643ebb2ca3cc';
     private const CANDIDACY_UUID_2 = '5417fda6-6aeb-47ab-9da3-46d60046a3d5';
     private const CANDIDACY_UUID_3 = 'c1921620-4101-1c66-967e-86b08a720aad';
+
+    private $imageManager;
+
+    public function __construct(ImageManager $imageManager)
+    {
+        $this->imageManager = $imageManager;
+    }
 
     public function load(ObjectManager $manager)
     {
@@ -45,7 +53,7 @@ class LoadCommitteeCandidacyData extends Fixture
         ));
 
         $manager->persist($candidacy);
-        $this->getImageManager()->saveImage($candidacy);
+        $this->imageManager->saveImage($candidacy);
 
         $this->setReference('committee-candidacy-1', $candidacy);
 
@@ -85,10 +93,5 @@ class LoadCommitteeCandidacyData extends Fixture
         return [
             LoadAdherentData::class,
         ];
-    }
-
-    private function getImageManager(): ImageManager
-    {
-        return $this->container->get(ImageManager::class);
     }
 }

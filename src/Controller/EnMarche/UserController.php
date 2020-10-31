@@ -23,13 +23,13 @@ use App\Membership\UserEvents;
 use Doctrine\Common\Persistence\ObjectManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @Route("/parametres/mon-compte")
@@ -114,7 +114,7 @@ class UserController extends Controller
     public function setEmailNotificationsAction(
         Request $request,
         EmailSubscriptionHistoryHandler $historyManager,
-        EventDispatcher $dispatcher,
+        EventDispatcherInterface $dispatcher,
         SignUpHandler $signUpHandler
     ): Response {
         /** @var Adherent $adherent */

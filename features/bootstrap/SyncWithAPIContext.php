@@ -14,7 +14,7 @@ use App\Event\EventEvent;
 use App\Events;
 use App\Membership\UserEvent;
 use Behat\Behat\Context\Context;
-use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class SyncWithAPIContext implements Context
@@ -22,7 +22,7 @@ class SyncWithAPIContext implements Context
     private $doctrine;
     private $dispatcher;
 
-    public function __construct(Registry $doctrine, EventDispatcherInterface $dispatcher)
+    public function __construct(ManagerRegistry $doctrine, EventDispatcherInterface $dispatcher)
     {
         $this->doctrine = $doctrine;
         $this->dispatcher = $dispatcher;

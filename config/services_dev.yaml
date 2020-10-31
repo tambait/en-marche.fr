@@ -19,7 +19,7 @@ services:
         class: 'Tests\App\Test\Mailer\NullEmailClient'
         public: false
 
-    app.recaptcha.api_client:
+    App\Recaptcha\RecaptchaApiClient:
         class: 'Tests\App\Test\Recaptcha\DummyRecaptchaApiClient'
         public: false
 
@@ -31,17 +31,26 @@ services:
         class: Symfony\Component\Messenger\DataCollector\MessengerDataCollector
         tags: [{ name: 'data_collector', id: messenger, template: profiler/messenger.html.twig }]
 
-    App\VotingPlatform\Election\ResultCalculator:
-        public: true
+#    App\VotingPlatform\Election\ResultCalculator:
+#        public: true
+#
+#    App\Content\MediaFactory:
+#        public: true
+#
+#    App\Content\ClarificationFactory:
+#        public: true
+#
+#    App\Committee\CommitteeFactory:
+#        public: true
+#
+#    App\Committee\Feed\CommitteeFeedManager:
+#        public: true
 
-    App\Content\MediaFactory:
-        public: true
+#    App\Newsletter\NewsletterSubscriptionFactory:
+#        public: true
+#
+#    App\Content\ProposalFactory:
+#        public: true
 
-    App\Content\ClarificationFactory:
-        public: true
-
-    App\Committee\CommitteeFactory:
-        public: true
-
-    App\Committee\Feed\CommitteeFeedManager:
-        public: true
+#    League\Flysystem\FilesystemInterface:
+#        public: true

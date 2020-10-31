@@ -5,7 +5,7 @@ namespace App\Deputy;
 use App\Entity\District;
 use App\Entity\GeoData;
 use App\Geo\GeometryFactory;
-use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -27,7 +27,7 @@ class LightFileDistrictLoader
     private $geoDistricts;
     private $geometryFactory;
 
-    public function __construct(Registry $doctrine, LoggerInterface $logger)
+    public function __construct(ManagerRegistry $doctrine, LoggerInterface $logger)
     {
         $this->logger = $logger;
         $this->doctrine = $doctrine;

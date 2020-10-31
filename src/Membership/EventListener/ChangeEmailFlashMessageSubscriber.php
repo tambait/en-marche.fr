@@ -5,11 +5,11 @@ namespace App\Membership\EventListener;
 use App\Entity\Adherent;
 use App\Repository\AdherentChangeEmailTokenRepository;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ChangeEmailFlashMessageSubscriber implements EventSubscriberInterface
 {
@@ -23,7 +23,7 @@ class ChangeEmailFlashMessageSubscriber implements EventSubscriberInterface
     public function __construct(
         TokenStorageInterface $tokenStorage,
         AdherentChangeEmailTokenRepository $repository,
-        Session $session,
+        SessionInterface $session,
         TranslatorInterface $translator
     ) {
         $this->tokenStorage = $tokenStorage;

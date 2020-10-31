@@ -39,10 +39,6 @@
         <service id="App\CitizenProject\CitizenProjectFactory" public="true" />
 
         <!-- CitizenActions -->
-        <service id="App\CitizenAction\CitizenActionMessageNotifier">
-            <argument key="$mailer" type="service" id="app.mailer.transactional" />
-        </service>
-
         <service id="App\CitizenAction\CitizenActionParticipantsExporter" public="true" />
 
         <service id="App\CitizenAction\CitizenActionContactParticipantsCommandHandler" public="true">
@@ -58,12 +54,6 @@
 
         <!-- Donation -->
         <service id="App\Donation\DonationFactory" />
-        <service id="App\Donation\PayboxPaymentUnsubscription">
-            <argument type="service" key="$mailer" id="app.mailer.transactional" />
-        </service>
-        <service id="App\Donation\TransactionSubscriber">
-            <argument type="service" key="$mailer" id="app.mailer.transactional" />
-        </service>
         <service id="App\Donation\TransactionCallbackHandler"/>
         <service id="App\Donation\DonationRequestHandler"/>
 
@@ -84,9 +74,6 @@
 
         <!-- Membership -->
         <service id="App\Membership\MembershipRegistrationProcess"/>
-        <service id="App\Membership\AdherentChangeEmailHandler">
-            <argument key="$mailer" type="service" id="app.mailer.transactional" />
-        </service>
         <service id="App\Membership\EventListener\ChangeEmailFlashMessageSubscriber" />
         <service id="App\Membership\AdherentAccountActivationHandler" />
 
@@ -100,9 +87,6 @@
 
         <!-- Institutional Events -->
         <service id="App\InstitutionalEvent\InstitutionalEventCommandHandler" />
-        <service id="App\InstitutionalEvent\InstitutionalEventMessageNotifier">
-            <argument key="$mailer" type="service" id="app.mailer.transactional" />
-        </service>
 
         <!-- Assessor -->
         <service id="App\Assessor\AssessorRequestFactory" />
@@ -119,17 +103,11 @@
         <service id="App\ApplicationRequest\ApplicationRequestRepository" />
         <service id="App\ApplicationRequest\Listener\UpdateAdherentRelationSubscriber" />
         <service id="App\ApplicationRequest\Listener\HideDuplicateRequestsSubscriber" />
-        <service id="App\ApplicationRequest\Listener\SendConfirmationRequestSubscriber">
-            <argument key="$mailer" type="service" id="app.mailer.transactional" />
-        </service>
         <service id="App\ApplicationRequest\Listener\ApplicationRequestChangeSubscriber">
             <tag name="doctrine.event_subscriber"/>
         </service>
 
         <!-- EventListener -->
-        <service id="App\EventListener\ProcurationMailerSubscriber">
-            <argument key="$mailer" type="service" id="app.mailer.transactional" />
-        </service>
         <service id="App\EventListener\ProcurationReliabilitySubscriber"/>
         <service id="App\EventListener\ControllerListener">
             <tag name="kernel.event_listener" event="kernel.controller" method="onKernelController" priority="8" />
@@ -150,13 +128,7 @@
             <tag name="doctrine.event_listener" event="preUpdate" lazy="true" />
             <tag name="doctrine.event_listener" event="postUpdate" lazy="true" />
         </service>
-        <service id="App\Security\EventListener\LastVisitedPageOnGetListener">
-            <argument key="$apiPathPrefix">%env(API_PATH_PREFIX)%</argument>
-        </service>
         <service id="App\EventListener\RecordReferentLastVisitListener" />
-        <service id="App\EventListener\SendEventUpdateNotificationListener">
-            <argument key="$mailer" type="service" id="app.mailer.transactional"/>
-        </service>
         <!-- EventSubscriber -->
         <service id="App\EventSubscriber\CommentsCguSubscriber"/>
 
@@ -367,18 +339,6 @@
         <service id="App\IdeasWorkshop\Listener\IdeaExtendListener" />
         <service id="App\IdeasWorkshop\Listener\ApproveThreadCommentListener" />
         <service id="App\IdeasWorkshop\Listener\EnableThreadListener" />
-        <service id="App\IdeasWorkshop\Handler\SendMailForApprovedThreadCommentHandler">
-            <argument key="$mailer" type="service" id="app.mailer.transactional"/>
-            <tag name="messenger.message_handler"/>
-        </service>
-        <service id="App\IdeasWorkshop\Handler\SendMailForPublishedIdeaHandler">
-            <argument key="$mailer" type="service" id="app.mailer.transactional"/>
-            <tag name="messenger.message_handler"/>
-        </service>
-        <service id="App\IdeasWorkshop\Handler\SendMailForExtendedIdeaHandler">
-            <argument key="$mailer" type="service" id="app.mailer.transactional"/>
-            <tag name="messenger.message_handler"/>
-        </service>
 
         <service id="App\Logging\CurrentUserProcessor">
             <tag name="monolog.processor" method="processRecord" />

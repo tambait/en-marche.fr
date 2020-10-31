@@ -4,8 +4,6 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
         <!-- Newsletter -->
-        <service id="app.newsletter_subscription.factory" class="App\Newsletter\NewsletterSubscriptionFactory" />
-
         <service id="app.newsletter_subscription.handler" class="App\Newsletter\NewsletterSubscriptionHandler">
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="event_dispatcher" />

@@ -10,25 +10,26 @@ use App\Entity\Adherent;
 use App\Entity\Administrator;
 use App\Entity\CertificationRequest;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-class LoadCertificationData extends Fixture
+class LoadCertificationData extends Fixture implements DependentFixtureInterface
 {
-    /**
-     * @var CertificationManager
-     */
     private $certificationManager;
-
-    /**
-     * @var CertificationAuthorityManager
-     */
     private $certificationAuthorityManager;
+
+    public function __construct(
+        CertificationManager $certificationManager,
+        CertificationAuthorityManager $certificationAuthorityManager
+    ) {
+        $this->certificationManager = $certificationManager;
+        $this->certificationAuthorityManager = $certificationAuthorityManager;
+    }
 
     public function load(ObjectManager $manager): void
     {
-        $this->certificationManager = $this->getCertificationManager();
-        $this->certificationAuthorityManager = $this->getCertificationAuthorityManager();
+        return;
 
         /** @var Adherent $adherent1 */
         $adherent1 = $this->getReference('adherent-1');
@@ -50,33 +51,33 @@ class LoadCertificationData extends Fixture
         $this->certificationAuthorityManager->certify($adherent1, $administrator);
 
         // Adherent with pending certification request
-        $this->createRequest($adherent2);
+        $manager->persist($this->createRequest($adherent2));
 
         // Adherent with refused then approved certification request
-        $certificationRequest = $this->createRequest($adherent3);
+        $manager->persist($certificationRequest = $this->createRequest($adherent3));
         $refuseCommand = new CertificationRequestRefuseCommand($certificationRequest, $administrator);
         $refuseCommand->setReason(CertificationRequestRefuseCommand::REFUSAL_REASON_INFORMATIONS_NOT_MATCHING);
         $refuseCommand->setComment('Last names do not match.');
         $this->certificationAuthorityManager->refuse($refuseCommand);
 
-        $certificationRequest = $this->createRequest($adherent3);
+        $manager->persist($certificationRequest = $this->createRequest($adherent3));
         $this->certificationAuthorityManager->approve($certificationRequest, $administrator);
 
         // Adherent with 2 refused certification request
-        $certificationRequest = $this->createRequest($adherent4);
+        $manager->persist($certificationRequest = $this->createRequest($adherent4));
         $refuseCommand = new CertificationRequestRefuseCommand($certificationRequest, $administrator);
         $refuseCommand->setReason(CertificationRequestRefuseCommand::REFUSAL_REASON_DOCUMENT_NOT_READABLE);
         $refuseCommand->setComment('Informations are not readable.');
         $this->certificationAuthorityManager->refuse($refuseCommand);
 
-        $certificationRequest = $this->createRequest($adherent4);
+        $manager->persist($certificationRequest = $this->createRequest($adherent4));
         $refuseCommand = new CertificationRequestRefuseCommand($certificationRequest, $administrator);
         $refuseCommand->setReason(CertificationRequestRefuseCommand::REFUSAL_REASON_INFORMATIONS_NOT_MATCHING);
         $refuseCommand->setComment('First names do not match.');
         $this->certificationAuthorityManager->refuse($refuseCommand);
 
         // Adherent with blocked certification request
-        $certificationRequest = $this->createRequest($adherent5);
+        $manager->persist($certificationRequest = $this->createRequest($adherent5));
         $blockCommand = new CertificationRequestBlockCommand($certificationRequest, $administrator);
         $blockCommand->setReason(CertificationRequestBlockCommand::BLOCK_REASON_FALSE_DOCUMENT);
         $blockCommand->setComment('French ID should have blue borders.');
@@ -110,15 +111,5 @@ class LoadCertificationData extends Fixture
         $this->certificationManager->handleRequest($certificationRequest);
 
         return $certificationRequest;
-    }
-
-    private function getCertificationManager(): CertificationManager
-    {
-        return $this->container->get(CertificationManager::class);
-    }
-
-    private function getCertificationAuthorityManager(): CertificationAuthorityManager
-    {
-        return $this->container->get(CertificationAuthorityManager::class);
     }
 }

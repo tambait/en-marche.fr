@@ -51,5 +51,3 @@ services:
     Tests\App\Image\DummyImageManager: ~
 
     App\Image\ImageManagerInterface: '@Tests\App\Image\DummyImageManager'
-
-    App\Vision\IdentityDocumentParser: ~

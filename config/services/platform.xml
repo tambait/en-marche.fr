@@ -29,7 +29,8 @@
         </service>
 
         <!-- Addresses -->
-        <service id="app.address.post_address_factory" class="App\Address\PostAddressFactory" public="false" />
+        <service id="App\Address\PostAddressFactory" />
+        <service id="app.address.post_address_factory" alias="App\Address\PostAddressFactory" public="false" />
 
         <!-- Map -->
         <service id="app.map.google_maps_static_provider" class="App\Map\GoogleStaticMapProvider">

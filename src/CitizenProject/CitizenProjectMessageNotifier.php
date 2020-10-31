@@ -31,13 +31,13 @@ class CitizenProjectMessageNotifier implements EventSubscriberInterface
     public function __construct(
         AdherentRepository $adherentRepository,
         CitizenProjectManager $manager,
-        MailerService $mailer,
+        MailerService $transactionalMailer,
         CommitteeManager $committeeManager,
         RouterInterface $router
     ) {
         $this->adherentRepository = $adherentRepository;
         $this->manager = $manager;
-        $this->mailer = $mailer;
+        $this->mailer = $transactionalMailer;
         $this->committeeManager = $committeeManager;
         $this->router = $router;
     }

@@ -61,7 +61,7 @@ class InactiveAdminListener implements ServiceSubscriberInterface
         return [
             'session' => SessionInterface::class,
             'security.token_storage' => TokenStorageInterface::class,
-            'security.logout_url_generator' => LogoutUrlGenerator::class,
+//            'security.logout_url_generator' => LogoutUrlGenerator::class,
         ];
     }
 }

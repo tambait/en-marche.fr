@@ -5,10 +5,6 @@
     <services>
         <defaults autowire="true" autoconfigure="true"/>
 
-        <service id="app.admin.administrator_factory" class="App\Admin\AdministratorFactory">
-            <argument type="service" id="security.encoder_factory" />
-        </service>
-
         <!--
         ######################################################
         # Communication
@@ -381,6 +377,7 @@
             <argument />
             <argument type="service" id="App\Repository\ReportRepository" />
         </service>
+        <service id="App\Admin\ReportAdmin" alias="app.admin.report" />
 
         <service id="app.admin.city" class="App\Admin\CityAdmin">
             <tag name="sonata.admin" manager-type="orm" label="Communes" group="Territoire" />
