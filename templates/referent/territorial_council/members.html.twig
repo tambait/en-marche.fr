@@ -151,7 +151,7 @@
                                     </td>
                                     <td>
                                         {% for quality in membership.qualities %}
-                                            <b>{{ ('territorial_council.membership.quality.' ~ quality.name)|trans }}</b> {{ quality.zone }}
+                                            <b>{{ ('territorial_council.membership.quality.' ~ quality.name)|transchoice(adherent.isFemale) }}</b> {{ quality.zone }}
 
                                             {% if adherent.findMandatesForQuality(quality.name, true)|length %}
                                                 <span class="elected-tag elected-tag--small text--on-yellow text--bold b__nudge--left-nano">désigné{{ adherent.isFemale ? 'e' }}</span>
