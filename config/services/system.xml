@@ -96,32 +96,6 @@
             </call>
         </service>
 
-        <!-- Dynamic redirections subscriber -->
-        <service id="app.dynamic_redirections_subscriber" class="App\Redirection\Dynamic\RedirectionsSubscriber">
-            <call method="addHandler">
-                <argument type="service" id="App\Redirection\Dynamic\RedirectToAdminPanelHandler" />
-            </call>
-            <call method="addHandler">
-                <argument type="service" id="App\Redirection\Dynamic\RedirectToRemoveUuidHandler" />
-            </call>
-            <call method="addHandler">
-                <argument type="service" id="App\Redirection\Dynamic\RedirectToRouteHandler" />
-            </call>
-            <call method="addHandler">
-                <argument type="service" id="App\Redirection\Dynamic\RedirectToPathHandler" />
-            </call>
-            <tag name="kernel.event_subscriber" />
-        </service>
-
-        <!-- Dynamic redirections "to remove uuid" handler-->
-        <service id="App\Redirection\Dynamic\RedirectToRemoveUuidHandler">
-            <argument type="service" id="App\Redirection\Dynamic\RedirectionsProvider" />
-            <argument type="service" id="router" />
-            <argument type="service" id="App\Repository\EventRepository" />
-            <argument>%pattern_uuid%</argument>
-        </service>
-
-        <!-- Dynamic redirections "to path" handler -->
         <service id="app.react_routing_loader" class="App\React\ReactAppRegistry" />
 
         <!-- Security -->

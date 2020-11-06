@@ -206,7 +206,7 @@ class TonMacronControllerTest extends WebTestCase
 
     private function getTonMacronInvitationHandler(): InvitationProcessorHandler
     {
-        return $this->container->get('app.ton_macron.invitation_processor_handler');
+        return $this->container->get(InvitationProcessorHandler::class);
     }
 
     private function getCurrentInvitation(): InvitationProcessor

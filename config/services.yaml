@@ -43,11 +43,14 @@ services:
             $mailchimpListId: '%env(MAILCHIMP_MEMBER_LIST_ID)%'
             $mailchimpElectedRepresentativeListId: '%env(MAILCHIMP_ELECTED_REPRESENTATIVE_LIST_ID)%'
             $transactionalMailer: '@app.mailer.transactional'
+            $campaignMailer: '@app.mailer.campaign'
             $votingProcessWorkflow: '@state_machine.voting_process'
             $votingPlatformCache: !service
                 class: Symfony\Component\Cache\Simple\Psr6Cache
                 arguments: ['@app.cache.voting_platform']
             $geoGouvApiClient: '@app.http_client.geo_gouv'
+            $tonMacronInvitationStateMachine: '@state_machine.ton_macron_invitation'
+            $patternUuid: '%pattern_uuid%'
 
     _instanceof:
         App\Adherent\Unregistration\Handlers\UnregistrationAdherentHandlerInterface:
@@ -64,11 +67,13 @@ services:
             tags: ['app.adherent.territorial_council_membership.handler']
         Symfony\Component\Messenger\Handler\MessageHandlerInterface:
             tags: ['messenger.message_handler']
+        App\Redirection\Dynamic\RedirectToInterface:
+            tags: ['app.redirection.handler']
 
     # Imports
     App\:
         resource: '../src/*'
-        exclude: '../src/{Admin,Algolia,OAuth,Twig,Mailchimp,Mailer,DependencyInjection,Controller,Entity,Security,Kernel.php}'
+        exclude: '../src/{Admin,Algolia,OAuth,Twig,Mailchimp,DependencyInjection,Controller,Entity,Security,Kernel.php}'
     App\Algolia\:
         resource: '../src/Algolia/'
         exclude: '../src/Algolia/Sonata/{Pager,ProxyQuery}'
@@ -88,6 +93,10 @@ services:
     App\Adherent\Handler\AdherentUpdateTerritorialCouncilMembershipsCommandHandler:
         arguments:
             $handlers: !tagged 'app.adherent.territorial_council_membership.handler'
+
+    App\Redirection\Dynamic\RedirectionsSubscriber:
+        arguments:
+            $handlers: !tagged 'app.redirection.handler'
 
     App\AdherentMessage\Listener\InitialiseMailchimpCampaignEntitySubscriber:
         arguments: [ !tagged 'app.adherent_message.mailchimp.campaign.handler' ]

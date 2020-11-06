@@ -17,6 +17,7 @@ use App\Entity\CitizenProject;
 use App\Entity\EventRegistration;
 use App\Event\EventCanceledHandler;
 use App\Event\EventRegistrationCommand;
+use App\Event\EventRegistrationCommandHandler;
 use App\Exception\BadUuidRequestException;
 use App\Exception\InvalidUuidException;
 use App\Form\CitizenActionCommandType;
@@ -58,18 +59,22 @@ class CitizenActionManagerController extends Controller
         Request $request,
         CitizenProject $project,
         CitizenProjectManager $citizenProjectManager,
-        GeoCoder $geoCoder
+        GeoCoder $geoCoder,
+        EventRegistrationCommandHandler $eventRegistrationCommandHandler,
+        CitizenActionCommandHandler $citizenActionCommandHandler
     ): Response {
         $command = new CitizenActionCommand($this->getUser(), $project);
         $command->setTimeZone($geoCoder->getTimezoneFromIp($request->getClientIp()));
-        $form = $this->createForm(CitizenActionCommandType::class, $command)
+
+        $form = $this
+            ->createForm(CitizenActionCommandType::class, $command)
             ->handleRequest($request)
         ;
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $action = $this->get(CitizenActionCommandHandler::class)->handle($command);
+            $action = $citizenActionCommandHandler->handle($command);
 
-            $this->get('app.event.registration_handler')->handle(new EventRegistrationCommand($action, $this->getUser()), false);
+            $eventRegistrationCommandHandler->handle(new EventRegistrationCommand($action, $this->getUser()), false);
             $this->addFlash('info', 'citizen_action.creation.success');
 
             return $this->redirectToRoute('app_citizen_action_show', [
@@ -155,7 +160,8 @@ class CitizenActionManagerController extends Controller
         CitizenAction $citizenAction,
         CitizenProject $project,
         CitizenActionManager $citizenActionManager,
-        CitizenProjectMembershipRepository $citizenProjectMembershipRepository
+        CitizenProjectMembershipRepository $citizenProjectMembershipRepository,
+        CitizenActionParticipantsExporter $exporter
     ): Response {
         $registrations = $this->getRegistrations($request, $citizenAction, self::ACTION_EXPORT);
 
@@ -171,7 +177,7 @@ class CitizenActionManagerController extends Controller
             $registrations,
             $citizenProjectMembershipRepository->findAdministrators($project)
         );
-        $exported = $this->get(CitizenActionParticipantsExporter::class)->export($participants);
+        $exported = $exporter->export($participants);
 
         return new SnappyResponse($exported, 'inscrits-a-l-action-citoyenne.csv', 'text/csv');
     }
@@ -184,7 +190,7 @@ class CitizenActionManagerController extends Controller
         Request $request,
         CitizenAction $citizenAction,
         CitizenProject $project,
-        CitizenActionManager $citizenActionManager
+        CitizenActionContactParticipantsCommandHandler $handler
     ): Response {
         $registrations = $this->getRegistrations($request, $citizenAction, self::ACTION_CONTACT);
 
@@ -198,13 +204,14 @@ class CitizenActionManagerController extends Controller
 
         $command = new CitizenActionContactParticipantsCommand($this->getUser(), $registrations->toArray());
 
-        $form = $this->createForm(ContactMembersType::class, $command, ['csrf_token_id' => 'citizen_action.contact_participants'])
+        $form = $this
+            ->createForm(ContactMembersType::class, $command, ['csrf_token_id' => 'citizen_action.contact_participants'])
             ->add('submit', SubmitType::class)
             ->handleRequest($request)
         ;
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->get(CitizenActionContactParticipantsCommandHandler::class)->handle($command);
+            $handler->handle($command);
             $this->addFlash('info', 'citizen_action.contact.success');
 
             return $this->redirectToRoute('app_citizen_action_list_participants', [

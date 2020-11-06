@@ -39,41 +39,11 @@
         </service>
 
         <!-- Events -->
-        <service id="app.event.registration_factory" class="App\Event\EventRegistrationFactory"/>
-
         <service id="app.event.handler" class="App\Event\EventCommandHandler">
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="App\Event\EventFactory"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
         </service>
-
-        <service id="app.event.invitation_handler" class="App\Event\EventInvitationHandler">
-            <argument type="service" id="doctrine.orm.entity_manager"/>
-            <argument type="service" id="app.mailer.transactional"/>
-            <argument type="service" id="app.routing.remote_url_generator"/>
-        </service>
-
-        <service id="app.event.registration_handler" class="App\Event\EventRegistrationCommandHandler">
-            <argument type="service" id="event_dispatcher"/>
-            <argument type="service" id="app.event.registration_factory"/>
-            <argument type="service" id="app.event.registration_manager"/>
-        </service>
-        <service alias="app.event.registration_handler" id="App\Event\EventRegistrationCommandHandler" />
-
-        <service id="app.event.message_notifier" class="App\Event\EventMessageNotifier">
-            <argument type="service" id="app.mailer.transactional"/>
-            <argument type="service" id="App\Committee\CommitteeManager"/>
-            <argument type="service" id="App\Repository\EventRegistrationRepository"/>
-            <argument type="service" id="router"/>
-            <tag name="kernel.event_subscriber"/>
-        </service>
-
-        <service id="app.event.registration_manager" class="App\Event\EventRegistrationManager">
-            <argument type="service" id="doctrine.orm.entity_manager"/>
-            <argument type="service" id="App\Repository\EventRegistrationRepository"/>
-        </service>
-
-        <service id="app.event.registration_exporter" class="App\Event\EventRegistrationExporter" />
 
         <service id="app.event.contact_members_handler" class="App\Event\EventContactMembersCommandHandler">
             <argument type="service" id="app.mailer.campaign" />

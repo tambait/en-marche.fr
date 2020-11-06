@@ -15,6 +15,7 @@ use App\Entity\Committee;
 use App\Entity\CommitteeMembership;
 use App\Entity\Event;
 use App\Entity\TurnkeyProject;
+use App\Event\EventRegistrationManager;
 use App\Exception\BadUuidRequestException;
 use App\Exception\EventRegistrationException;
 use App\Exception\InvalidUuidException;
@@ -218,10 +219,8 @@ class AdherentController extends Controller
     /**
      * @Route("/mes-evenements", name="app_adherent_events", methods={"GET"})
      */
-    public function eventsAction(Request $request): Response
+    public function eventsAction(Request $request, EventRegistrationManager $manager): Response
     {
-        $manager = $this->get('app.event.registration_manager');
-
         try {
             $registration = $manager->getAdherentRegistrations($this->getUser(), $request->query->get('type', 'upcoming'));
         } catch (EventRegistrationException $e) {

@@ -43,7 +43,7 @@ class ImportReferentBioPictureCommand extends ContainerAwareCommand
     private $mediaFactory;
 
     /**
-     * @var Filesystem
+     * @var FilesystemInterface
      */
     private $storage;
 
@@ -67,7 +67,6 @@ class ImportReferentBioPictureCommand extends ContainerAwareCommand
         $this->referentRepository = $this->em->getRepository(Referent::class);
         $this->mediaRepository = $this->em->getRepository(Media::class);
         $this->mediaFactory = $this->getContainer()->get(MediaFactory::class);
-        $this->storage = $this->getContainer()->get(FilesystemInterface::class);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -255,5 +254,11 @@ class ImportReferentBioPictureCommand extends ContainerAwareCommand
 
             $this->storage->delete($imgePath);
         }
+    }
+
+    /** @required */
+    public function setStorage(FilesystemInterface $storage): void
+    {
+        $this->storage = $storage;
     }
 }

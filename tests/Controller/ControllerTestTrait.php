@@ -233,13 +233,8 @@ trait ControllerTestTrait
         $this->hosts = [];
 
         if ($this->container) {
-//            $this->cleanupContainer($this->container);
             $this->container = null;
         }
-
-//        foreach ($this->containers as $container) {
-//            $this->cleanupContainer($container);
-//        }
     }
 
     protected function getMessageRecorder(): MessageRecorderInterface

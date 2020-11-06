@@ -7,6 +7,7 @@ use App\CitizenAction\CitizenActionRegistrationCommandHandler;
 use App\Controller\EntityControllerTrait;
 use App\Entity\CitizenAction;
 use App\Event\EventRegistrationCommand;
+use App\Event\EventRegistrationManager;
 use App\Exception\BadUuidRequestException;
 use App\Exception\InvalidUuidException;
 use App\Form\EventRegistrationType;
@@ -167,10 +168,11 @@ class CitizenActionController extends Controller
      *     methods={"GET"}
      * )
      */
-    public function attendConfirmationAction(Request $request, CitizenAction $citizenAction): Response
-    {
-        $manager = $this->get('app.event.registration_manager');
-
+    public function attendConfirmationAction(
+        Request $request,
+        CitizenAction $citizenAction,
+        EventRegistrationManager $manager
+    ): Response {
         try {
             if (!$registration = $manager->findRegistration($uuid = $request->query->get('registration'))) {
                 throw $this->createNotFoundException(sprintf('Unable to find event registration by its UUID: %s', $uuid));

@@ -8,6 +8,7 @@ use App\Entity\EventRegistration;
 use App\Event\EventCanceledHandler;
 use App\Event\EventCommand;
 use App\Event\EventContactMembersCommand;
+use App\Event\EventRegistrationExporter;
 use App\Exception\BadUuidRequestException;
 use App\Exception\InvalidUuidException;
 use App\Form\ContactMembersType;
@@ -106,7 +107,7 @@ class EventManagerController extends Controller
     /**
      * @Route("/inscrits/exporter", name="app_event_export_members", methods={"POST"})
      */
-    public function exportMembersAction(Request $request, Event $event): Response
+    public function exportMembersAction(Request $request, Event $event, EventRegistrationExporter $exporter): Response
     {
         $registrations = $this->getRegistrations($request, $event, self::ACTION_EXPORT);
 
@@ -116,7 +117,7 @@ class EventManagerController extends Controller
             ]);
         }
 
-        $exported = $this->get('app.event.registration_exporter')->export($registrations);
+        $exported = $exporter->export($registrations);
 
         return new SnappyResponse($exported, 'inscrits-a-l-evenement.csv', 'text/csv');
     }

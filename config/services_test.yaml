@@ -43,8 +43,15 @@ services:
 
     test.App\Adherent\Handler\RemoveAdherentAndRelatedDataCommandHandler:
         alias: App\Adherent\Handler\RemoveAdherentAndRelatedDataCommandHandler
-        public: true
+
+    test.App\Vision\IdentityDocumentParser: '@App\Vision\IdentityDocumentParser'
 
     Tests\App\Image\DummyImageManager: ~
 
     App\Image\ImageManagerInterface: '@Tests\App\Image\DummyImageManager'
+
+    App\Messenger\MessageRecorder\MessageRecorderInterface: '@App\Messenger\MessageRecorder\MessageRecorder'
+
+    App\Committee\Feed\CommitteeFeedManager: ~
+
+    League\Flysystem\FilesystemInterface: '@League\Flysystem\Filesystem'
