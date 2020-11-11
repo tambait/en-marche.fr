@@ -203,3 +203,31 @@ services:
     App\Procuration\ProcurationProxyMessageFactory:
         arguments:
             $replyToEmailAddress: '%procurations_reply_to_email%'
+
+    Lexik\Bundle\PayboxBundle\Paybox\System\Cancellation\Request: '@lexik_paybox.request_cancellation_handler'
+    Sonata\Exporter\Exporter: '@sonata.exporter.exporter'
+
+    Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory: '@sensio_framework_extra.psr7.http_message_factory'
+    Symfony\Bridge\PsrHttpMessage\HttpFoundationFactoryInterface: '@sensio_framework_extra.psr7.http_foundation_factory'
+
+    League\OAuth2\Server\Repositories\AccessTokenRepositoryInterface: '@App\OAuth\Store\AccessTokenStore'
+    League\OAuth2\Server\Repositories\UserRepositoryInterface: '@App\OAuth\Repository\OAuthUserRepository'
+    League\OAuth2\Server\Repositories\AuthCodeRepositoryInterface: '@App\OAuth\Store\AuthorizationCodeStore'
+    League\OAuth2\Server\Repositories\ClientRepositoryInterface: '@App\OAuth\Store\ClientStore'
+    League\OAuth2\Server\Repositories\RefreshTokenRepositoryInterface: '@App\OAuth\Store\RefreshTokenStore'
+    League\OAuth2\Server\Repositories\ScopeRepositoryInterface: '@App\OAuth\Store\ScopeStore'
+
+    Symfony\Component\Security\Http\Logout\LogoutUrlGenerator: '@security.logout_url_generator'
+
+    Sonata\AdminBundle\Builder\ShowBuilderInterface: '@sonata.admin.builder.orm_show'
+#    Sonata\AdminBundle\Model\ModelManagerInterface: '@sonata.admin.manager.orm'
+#    League\OAuth2\Server\Repositories\AccessTokenRepositoryInterface: '@App\OAuth\Store\AccessTokenStore'
+#
+#    League\OAuth2\Server\ResourceServer:
+#        arguments:
+#            $publicKey: '%env(SSL_PUBLIC_KEY)%'
+#
+    App\Security\EventListener\LastVisitedPageOnGetListener:
+        arguments:
+            $apiPathPrefix: '%env(API_PATH_PREFIX)%'
+            $firewallMap: '@security.firewall.map'

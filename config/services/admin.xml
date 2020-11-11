@@ -5,9 +5,7 @@
     <services>
         <defaults autowire="true" autoconfigure="true"/>
 
-        <service id="app.admin.administrator_factory" class="App\Admin\AdministratorFactory">
-            <argument type="service" id="security.encoder_factory" />
-        </service>
+        <service id="App\Admin\AdministratorFactory" />
 
         <!--
         ######################################################
@@ -381,6 +379,7 @@
             <argument />
             <argument type="service" id="App\Repository\ReportRepository" />
         </service>
+        <service id="App\Admin\ReportAdmin" alias="app.admin.report" />
 
         <service id="app.admin.city" class="App\Admin\CityAdmin">
             <tag name="sonata.admin" manager-type="orm" label="Communes" group="Territoire" />
@@ -1023,6 +1022,7 @@
                 <argument>admin/election/city_card/edit.html.twig</argument>
             </call>
         </service>
+        <service id="App\Admin\Election\CityCardAdmin" alias="app.admin.election_city_card" />
 
         <service id="app.admin.election_city_card_managers" class="App\Admin\Election\CityCardManagersAdmin">
             <tag name="sonata.admin" manager-type="orm" label="Elections » Suivi / Pilotage" group="Politique" />

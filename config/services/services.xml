@@ -58,9 +58,6 @@
             <tag name="doctrine.event_listener" event="preUpdate" lazy="true" />
             <tag name="doctrine.event_listener" event="postUpdate" lazy="true" />
         </service>
-        <service id="App\Security\EventListener\LastVisitedPageOnGetListener">
-            <argument key="$apiPathPrefix">%env(API_PATH_PREFIX)%</argument>
-        </service>
 
         <!-- GeoCoder -->
         <service id="GeoIp2\WebService\Client">

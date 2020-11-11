@@ -8,7 +8,7 @@ use App\Security\Exception\BadCredentialsException;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use League\OAuth2\Server\ResourceServer;
 use Ramsey\Uuid\Uuid;
-use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
+use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,7 +27,7 @@ class OAuthAuthenticator extends AbstractGuardAuthenticator
 
     public function __construct(
         ResourceServer $resourceServer,
-        HttpMessageFactoryInterface $httpMessageFactory,
+        DiactorosFactory $httpMessageFactory,
         AdherentRepository $adherentRepository
     ) {
         $this->resourceServer = $resourceServer;
@@ -107,5 +107,10 @@ class OAuthAuthenticator extends AbstractGuardAuthenticator
     public function supportsRememberMe()
     {
         return false;
+    }
+
+    public function supports(Request $request)
+    {
+        return true;
     }
 }
