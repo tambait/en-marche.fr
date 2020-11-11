@@ -8,7 +8,7 @@ use App\Security\Exception\BadCredentialsException;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use League\OAuth2\Server\ResourceServer;
 use Ramsey\Uuid\Uuid;
-use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
+use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,16 +22,16 @@ use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 class OAuthAuthenticator extends AbstractGuardAuthenticator
 {
     private $resourceServer;
-    private $diactorosFactory;
+    private $httpMessageFactory;
     private $adherentRepository;
 
     public function __construct(
         ResourceServer $resourceServer,
-        DiactorosFactory $diactorosFactory,
+        HttpMessageFactoryInterface $httpMessageFactory,
         AdherentRepository $adherentRepository
     ) {
         $this->resourceServer = $resourceServer;
-        $this->diactorosFactory = $diactorosFactory;
+        $this->httpMessageFactory = $httpMessageFactory;
         $this->adherentRepository = $adherentRepository;
     }
 
@@ -50,7 +50,7 @@ class OAuthAuthenticator extends AbstractGuardAuthenticator
 
     public function getCredentials(Request $request)
     {
-        $psrRequest = $this->diactorosFactory->createRequest($request);
+        $psrRequest = $this->httpMessageFactory->createRequest($request);
 
         try {
             $psrRequest = $this->resourceServer->validateAuthenticatedRequest($psrRequest);

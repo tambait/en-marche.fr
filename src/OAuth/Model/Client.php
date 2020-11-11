@@ -46,4 +46,9 @@ final class Client implements ClientEntityInterface
     {
         return $this->scopes;
     }
+
+    public function isConfidential()
+    {
+        return true;
+    }
 }

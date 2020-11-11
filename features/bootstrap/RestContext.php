@@ -57,7 +57,7 @@ class RestContext extends BehatchRestContext
             Uuid::uuid5(Uuid::NAMESPACE_OID, $identifier),
             $adherentRepository->findOneByEmail($email),
             $identifier,
-            new \DateTime('+10 minutes'),
+            new \DateTimeImmutable('+10 minutes'),
             $clientRepository->findOneBy(['name' => $clientName])
         );
 
@@ -138,13 +138,14 @@ class RestContext extends BehatchRestContext
         $token = new AccessTokenModel();
         $token->setClient($client);
         $token->setIdentifier($accessToken->getIdentifier());
-        $token->setExpiryDateTime(\DateTime::createFromFormat('U', $accessToken->getExpiryDateTime()->getTimestamp()));
+        $token->setExpiryDateTime($accessToken->getExpiryDateTime());
         $token->setUserIdentifier($accessToken->getUserIdentifier());
+        $token->setPrivateKey($this->privateCryptKey);
 
         foreach ($accessToken->getScopes() as $scope) {
             $token->addScope(new Scope($scope));
         }
 
-        return $token->convertToJWT($this->privateCryptKey);
+        return (string) $token;
     }
 }

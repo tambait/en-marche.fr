@@ -34,7 +34,7 @@ abstract class AbstractGrantToken extends AbstractToken
         UuidInterface $uuid,
         ?Adherent $user,
         string $identifier,
-        \DateTime $expiryDateTime,
+        \DateTimeImmutable $expiryDateTime,
         Client $client = null
     ) {
         parent::__construct($uuid, $identifier, $expiryDateTime);
