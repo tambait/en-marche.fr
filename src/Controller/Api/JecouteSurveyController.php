@@ -9,7 +9,7 @@ use App\Jecoute\SurveyTypeEnum;
 use App\Repository\Jecoute\LocalSurveyRepository;
 use App\Repository\Jecoute\NationalSurveyRepository;
 use JMS\Serializer\SerializationContext;
-use JMS\Serializer\Serializer;
+use JMS\Serializer\SerializerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -33,7 +33,7 @@ class JecouteSurveyController extends Controller
     public function surveyListAction(
         LocalSurveyRepository $localSurveyRepository,
         NationalSurveyRepository $nationalSurveyRepository,
-        Serializer $serializer,
+        SerializerInterface $serializer,
         UserInterface $user
     ): Response {
         /** @var Adherent $user */

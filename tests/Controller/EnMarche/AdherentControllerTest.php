@@ -374,8 +374,8 @@ class AdherentControllerTest extends WebTestCase
 
         $this->assertClientIsRedirectedTo('/espace-adherent/mon-compte/centres-d-interet', $this->client);
 
+        $this->get('doctrine')->clear();
         /* @var Adherent $adherent */
-        $this->container->get('doctrine.orm.entity_manager')->clear();
         $adherent = $this->getAdherentRepository()->findOneByEmail('carl999@example.fr');
 
         self::assertSame(array_values($chosenInterests), $adherent->getInterests());

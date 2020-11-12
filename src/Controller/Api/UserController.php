@@ -5,7 +5,7 @@ namespace App\Controller\Api;
 use App\Entity\Adherent;
 use App\OAuth\Model\ApiUser;
 use JMS\Serializer\SerializationContext;
-use JMS\Serializer\Serializer;
+use JMS\Serializer\SerializerInterface;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use Nyholm\Psr7\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -18,7 +18,7 @@ class UserController extends Controller
     /**
      * @Route("/me", name="app_api_user_show_me_for_oauth", methods={"GET"})
      */
-    public function oauthShowMe(Serializer $serializer)
+    public function oauthShowMe(SerializerInterface $serializer)
     {
         if ($this->getUser() instanceof ApiUser) {
             return OAuthServerException::accessDenied('API user does not have access to this route')
@@ -42,7 +42,7 @@ class UserController extends Controller
      * @Security("is_granted('ROLE_ADHERENT')")
      * @Route("/users/me", name="app_api_user_show_me", methods={"GET"})
      */
-    public function showMe(Serializer $serializer): JsonResponse
+    public function showMe(SerializerInterface $serializer): JsonResponse
     {
         /* @var Adherent $user */
         $user = $this->getUser();

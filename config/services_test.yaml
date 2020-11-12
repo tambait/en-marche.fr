@@ -55,3 +55,6 @@ services:
     App\Committee\Feed\CommitteeFeedManager: ~
 
     League\Flysystem\FilesystemInterface: '@League\Flysystem\Filesystem'
+
+    App\Repository\EmailRepository: ~
+    App\Repository\AdherentRepository: ~

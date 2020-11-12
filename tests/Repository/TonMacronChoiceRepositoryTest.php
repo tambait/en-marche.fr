@@ -36,7 +36,7 @@ class TonMacronChoiceRepositoryTest extends WebTestCase
     {
         parent::setUp();
 
-        $this->container = $this->getContainer();
+        self::$container = $this->getContainer();
         $this->repository = $this->getTonMacronChoiceRepository();
     }
 
@@ -45,7 +45,7 @@ class TonMacronChoiceRepositoryTest extends WebTestCase
         $this->kill();
 
         $this->repository = null;
-        $this->container = null;
+        self::$container = null;
 
         parent::tearDown();
     }

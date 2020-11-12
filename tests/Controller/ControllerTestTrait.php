@@ -158,7 +158,7 @@ trait ControllerTestTrait
 
     private function getMessages(string $queue): array
     {
-        $channel = $this->container->get('old_sound_rabbit_mq.connection.default')->channel();
+        $channel = self::$container->get('old_sound_rabbit_mq.connection.default')->channel();
         $messages = [];
 
         /** @var AMQPMessage $message */
@@ -209,17 +209,17 @@ trait ControllerTestTrait
 
     protected function init(string $host = 'app')
     {
-        $this->container = $this->getContainer();
-        $this->manager = $this->container->get('doctrine.orm.entity_manager');
+        self::$container = $this->getContainer();
+        $this->manager = self::$container->get('doctrine.orm.entity_manager');
 
         // delete all scheduled emails
         $this->getEmailRepository()->createQueryBuilder('e')->delete()->getQuery()->execute();
 
         $this->hosts = [
-            'scheme' => $this->container->getParameter('router.request_context.scheme'),
-            'app' => $this->container->getParameter('app_host'),
-            'amp' => $this->container->getParameter('amp_host'),
-            'legislatives' => $this->container->getParameter('legislatives_host'),
+            'scheme' => self::$container->getParameter('router.request_context.scheme'),
+            'app' => self::$container->getParameter('app_host'),
+            'amp' => self::$container->getParameter('amp_host'),
+            'legislatives' => self::$container->getParameter('legislatives_host'),
         ];
 
         $this->client = $this->makeClient(['HTTP_HOST' => $this->hosts[$host]]);
@@ -232,8 +232,8 @@ trait ControllerTestTrait
         $this->adherents = null;
         $this->hosts = [];
 
-        if ($this->container) {
-            $this->container = null;
+        if (self::$container) {
+            self::$container = null;
         }
     }
 

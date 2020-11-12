@@ -2,10 +2,9 @@
 
 namespace Tests\App\Repository;
 
-use App\Entity\Projection\ManagedUser;
-use App\Entity\ReferentTag;
 use App\ManagedUsers\ManagedUsersFilter;
 use App\Repository\Projection\ManagedUserRepository;
+use App\Repository\ReferentTagRepository;
 use App\Subscription\SubscriptionTypeEnum;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
@@ -64,9 +63,9 @@ class ManagedUserRepositoryTest extends WebTestCase
     {
         parent::setUp();
 
-        $this->container = $this->getContainer();
-        $this->managedUserRepository = $this->getRepository(ManagedUser::class);
-        $this->referentTagRepository = $this->getRepository(ReferentTag::class);
+        self::$container = $this->getContainer();
+        $this->managedUserRepository = $this->get(ManagedUserRepository::class);
+        $this->referentTagRepository = $this->get(ReferentTagRepository::class);
     }
 
     protected function tearDown(): void

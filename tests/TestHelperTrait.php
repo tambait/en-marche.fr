@@ -107,14 +107,14 @@ trait TestHelperTrait
     /**
      * @var ContainerInterface
      */
-    protected $container;
+    protected static $container;
 
     /** @var Adherent[] */
     protected $adherents;
 
     public function get($id)
     {
-        return $this->container->get($id);
+        return self::$container->get($id);
     }
 
     public function assertMailCountRecipients(int $count, ?Email $mail): void
@@ -138,17 +138,17 @@ trait TestHelperTrait
 
     public function getManagerRegistry(): ManagerRegistry
     {
-        return $this->container->get('doctrine');
+        return self::$container->get('doctrine');
     }
 
     public function getStorage(): Filesystem
     {
-        return $this->container->get(FilesystemInterface::class);
+        return self::$container->get(FilesystemInterface::class);
     }
 
     public function getGlide(): Server
     {
-        return $this->container->get('app.glide');
+        return self::$container->get('app.glide');
     }
 
     public function getEntityManager($class): ObjectManager
@@ -378,7 +378,7 @@ trait TestHelperTrait
 
     public function getCommitteeFeedManager(): CommitteeFeedManager
     {
-        return $this->container->get(CommitteeFeedManager::class);
+        return self::$container->get(CommitteeFeedManager::class);
     }
 
     protected function getAdherent(string $uuid): ?Adherent

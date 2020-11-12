@@ -209,9 +209,9 @@ class AdherentTest extends TestCase
 
     protected function tearDown(): void
     {
-        $this->cleanupContainer($this->container);
+        $this->cleanupContainer(self::$container);
 
-        $this->container = null;
+        self::$container = null;
         $this->adherents = null;
 
         parent::tearDown();

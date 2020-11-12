@@ -79,7 +79,7 @@ class ProcurationControllerTest extends WebTestCase
     public function testChooseElectionOnRequest()
     {
         $this->assertFalse(
-            $this->container->get(ProcurationSession::class)->hasElectionContext(),
+            $this->get(ProcurationSession::class)->hasElectionContext(),
             'The session should not have an election context yet.'
         );
 
@@ -123,7 +123,7 @@ class ProcurationControllerTest extends WebTestCase
     public function testChooseElectionOnProposal()
     {
         $this->assertFalse(
-            $this->container->get(ProcurationSession::class)->hasElectionContext(),
+            $this->get(ProcurationSession::class)->hasElectionContext(),
             'The session should not have an election context yet.'
         );
 

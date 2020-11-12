@@ -26,7 +26,7 @@ class ProcurationSendReminderCommandTest extends WebTestCase
 
     protected function setUp(): void
     {
-        $this->container = $this->getContainer();
+        self::$container = $this->getContainer();
 
         parent::setUp();
     }

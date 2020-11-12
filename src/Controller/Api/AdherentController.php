@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class AdherentController extends AbstractController
@@ -26,7 +26,7 @@ class AdherentController extends AbstractController
      */
     public function anonymizeAction(
         Request $request,
-        Serializer $serializer,
+        SerializerInterface $serializer,
         ValidatorInterface $validator,
         ObjectManager $manager
     ): Response {
