@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\MyEuropeChoice;
 use App\Entity\MyEuropeInvitation;
+use App\Interactive\MyEuropeSerializer;
 use Knp\Bundle\SnappyBundle\Snappy\Response\SnappyResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -23,10 +24,10 @@ class AdminMyEuropeController extends Controller
     /**
      * @Route("/export/choices", name="app_admin_myeurope_export_choices", methods={"GET"})
      */
-    public function exportChoicesAction(): Response
+    public function exportChoicesAction(MyEuropeSerializer $serializer): Response
     {
         $choices = $this->getDoctrine()->getRepository(MyEuropeChoice::class)->findAll();
-        $exported = $this->get('app.my_europe.serializer.serializer')->serializeChoices($choices);
+        $exported = $serializer->serializeChoices($choices);
 
         return new SnappyResponse($exported, 'my-europe-choices.csv', 'text/csv');
     }
@@ -57,7 +58,7 @@ class AdminMyEuropeController extends Controller
     /**
      * @Route("/export/invitations/partial", name="app_admin_myeurope_export_invitations_partial", methods={"GET"})
      */
-    public function exportInvitationsPartialAction(Request $request): Response
+    public function exportInvitationsPartialAction(Request $request, MyEuropeSerializer $serializer): Response
     {
         $page = $request->query->get('page', 1);
 
@@ -66,7 +67,7 @@ class AdminMyEuropeController extends Controller
 
         return new JsonResponse([
             'count' => \count($invitations),
-            'lines' => $this->get('app.my_europe.serializer')->serializeInvitations($invitations),
+            'lines' => $serializer->serializeInvitations($invitations),
         ]);
     }
 }

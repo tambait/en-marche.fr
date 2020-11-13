@@ -75,7 +75,7 @@ class CommitteeMembershipRepositoryTest extends WebTestCase
     {
         parent::setUp();
 
-        self::$container = $this->getContainer();
+        static::$container = $this->getContainer();
         $this->repository = $this->getCommitteeMembershipRepository();
     }
 
@@ -84,7 +84,7 @@ class CommitteeMembershipRepositoryTest extends WebTestCase
         $this->kill();
 
         $this->repository = null;
-        self::$container = null;
+        static::$container = null;
 
         parent::tearDown();
     }

@@ -8,7 +8,7 @@
         <service id="League\CommonMark\CommonMarkConverter" />
 
         <!-- Feed -->
-        <service id="app.feed_generator.article" class="App\Feed\ArticleFeedGenerator">
+        <service id="App\Feed\ArticleFeedGenerator">
             <argument>%locale%</argument>
             <argument>%feed_ttl%</argument>
             <argument type="service" id="router" />
@@ -20,12 +20,6 @@
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="router" />
             <argument type="service" id="cache.app" />
-        </service>
-
-        <!-- Documents -->
-        <service id="app.document_manager" class="App\Documents\DocumentManager">
-            <argument type="service" id="App\Documents\DocumentRepository"/>
-            <argument type="service" id="App\Committee\CommitteeManager"/>
         </service>
 
         <!-- Medias -->
@@ -49,6 +43,5 @@
             </argument>
         </service>
         <service id="League\Glide\Server" alias="app.glide" />
-
     </services>
 </container>

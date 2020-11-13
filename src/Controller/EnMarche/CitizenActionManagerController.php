@@ -97,7 +97,8 @@ class CitizenActionManagerController extends Controller
         Request $request,
         CitizenProject $project,
         CitizenAction $action,
-        CitizenProjectManager $citizenProjectManager
+        CitizenProjectManager $citizenProjectManager,
+        CitizenActionCommandHandler $handler
     ): Response {
         $command = CitizenActionCommand::createFromCitizenAction($action);
         $form = $this->createForm(CitizenActionCommandType::class, $command)
@@ -105,7 +106,7 @@ class CitizenActionManagerController extends Controller
         ;
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $action = $this->get(CitizenActionCommandHandler::class)->handleUpdate($command, $action);
+            $action = $handler->handleUpdate($command, $action);
 
             $this->addFlash('info', 'citizen_action.update.success');
 

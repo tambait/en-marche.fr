@@ -28,7 +28,7 @@ class AlgoliaSynchronizeCommandTest extends WebTestCase
 
         $this->assertStringContainsString('Done!', $output->getDisplay());
 
-        $indexer = static::$kernel->getContainer()->get('search.service');
+        $indexer = static::$container->get('search.service');
         self::assertSame($expected, $indexer->countForIndexByType($className));
     }
 

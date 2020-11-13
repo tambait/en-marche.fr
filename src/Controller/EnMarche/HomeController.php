@@ -42,9 +42,9 @@ class HomeController extends Controller
     /**
      * @Route("/sitemap.xml", name="app_sitemap_index", methods={"GET"})
      */
-    public function sitemapIndexAction(): Response
+    public function sitemapIndexAction(SitemapFactory $factory): Response
     {
-        return $this->createXmlResponse($this->get(SitemapFactory::class)->createSitemapIndex());
+        return $this->createXmlResponse($factory->createSitemapIndex());
     }
 
     /**
@@ -56,10 +56,10 @@ class HomeController extends Controller
      *     methods={"GET"}
      * )
      */
-    public function sitemapAction(string $type, int $page): Response
+    public function sitemapAction(string $type, int $page, SitemapFactory $factory): Response
     {
         try {
-            return $this->createXmlResponse($this->get(SitemapFactory::class)->createSitemap($type, $page));
+            return $this->createXmlResponse($factory->createSitemap($type, $page));
         } catch (SitemapException $exception) {
             return $this->redirectToRoute('app_sitemap_index', [], Response::HTTP_MOVED_PERMANENTLY);
         }

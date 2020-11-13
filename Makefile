@@ -6,7 +6,7 @@ CONSOLE=$(EXEC) bin/console
 PHPCSFIXER?=$(EXEC) php -d memory_limit=1024m vendor/bin/php-cs-fixer
 BEHAT=$(EXEC) vendor/bin/behat
 BEHAT_ARGS?=-vvv
-PHPUNIT=$(EXEC) vendor/bin/phpunit
+PHPUNIT=$(EXEC) vendor/bin/phpunit --stop-on-failure
 PHPUNIT_ARGS?=-v
 DOCKER_FILES=$(shell find ./docker/dev/ -type f -name '*')
 

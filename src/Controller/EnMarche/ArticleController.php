@@ -4,6 +4,7 @@ namespace App\Controller\EnMarche;
 
 use App\Entity\Article;
 use App\Entity\ArticleCategory;
+use App\Feed\ArticleFeedGenerator;
 use Psr\Cache\CacheItemPoolInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -76,14 +77,13 @@ class ArticleController extends Controller
     /**
      * @Route("/feed.xml", name="articles_feed", methods={"GET"})
      */
-    public function feedAction(): Response
+    public function feedAction(ArticleFeedGenerator $generator): Response
     {
         /** @var CacheItemPoolInterface $cache */
         $cache = $this->get('cache.app');
         $cachedRenderedFeed = $cache->getItem('rss_feed');
 
         if (!$cachedRenderedFeed->isHit()) {
-            $generator = $this->get('app.feed_generator.article');
             $feed = $generator->buildFeed($this->getDoctrine()->getRepository(Article::class)->findAllForFeed());
 
             $cachedRenderedFeed->set($feed->render());

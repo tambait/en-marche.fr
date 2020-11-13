@@ -32,7 +32,7 @@ class NewsletterSubscriptionRepositoryTest extends WebTestCase
     {
         parent::setUp();
 
-        self::$container = $this->getContainer();
+        static::$container = $this->getContainer();
         $this->repository = $this->getNewsletterSubscriptionRepository();
     }
 
@@ -41,7 +41,7 @@ class NewsletterSubscriptionRepositoryTest extends WebTestCase
         $this->kill();
 
         $this->repository = null;
-        self::$container = null;
+        static::$container = null;
 
         parent::tearDown();
     }

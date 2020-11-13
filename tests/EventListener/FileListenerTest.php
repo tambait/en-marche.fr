@@ -27,10 +27,10 @@ class FileListenerTest extends WebTestCase
     protected function setUp(): void
     {
         self::bootKernel();
-        $container = self::$kernel->getContainer();
+
         $this->entityFileListener = new FileListener(
-            $container->get(FilesystemInterface::class),
-            $container->get(Server::class)
+            static::$container->get(FilesystemInterface::class),
+            static::$container->get(Server::class)
         );
     }
 }

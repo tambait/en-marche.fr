@@ -118,7 +118,7 @@ class GroupUtilsTest extends WebTestCase
     {
         parent::setUp();
 
-        self::$container = $this->getContainer();
+        static::$container = $this->getContainer();
     }
 
     protected function tearDown(): void

@@ -9,6 +9,7 @@ use App\Committee\CommitteeCreationCommand;
 use App\Committee\CommitteeCreationCommandHandler;
 use App\Committee\CommitteeManager;
 use App\Contact\ContactMessage;
+use App\Contact\ContactMessageHandler;
 use App\Entity\Adherent;
 use App\Entity\CitizenProject;
 use App\Entity\Committee;
@@ -235,7 +236,7 @@ class AdherentController extends Controller
     /**
      * @Route("/contacter/{uuid}", name="app_adherent_contact", requirements={"uuid": "%pattern_uuid%"}, methods={"GET", "POST"})
      */
-    public function contactAction(Request $request, Adherent $adherent): Response
+    public function contactAction(Request $request, Adherent $adherent, ContactMessageHandler $handler): Response
     {
         $fromType = $request->query->get('from');
         $fromId = $request->query->get('id');
@@ -264,7 +265,7 @@ class AdherentController extends Controller
         try {
             $form->handleRequest($request);
             if ($form->isSubmitted() && $form->isValid()) {
-                $this->get('app.adherent.contact_message_handler')->handle($message);
+                $handler->handle($message);
                 $this->addFlash('info', 'adherent.contact.success');
 
                 if ($from instanceof Committee) {

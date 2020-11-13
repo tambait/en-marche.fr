@@ -3,7 +3,9 @@
 namespace App\Controller\EnMarche;
 
 use App\BoardMember\BoardMemberFilter;
+use App\BoardMember\BoardMemberManager;
 use App\BoardMember\BoardMemberMessage;
+use App\BoardMember\BoardMemberMessageNotifier;
 use App\Entity\Adherent;
 use App\Entity\BoardMember\BoardMember;
 use App\Form\BoardMemberMessageType;
@@ -32,7 +34,7 @@ class BoardMemberController extends Controller
     /**
      * @Route("/recherche", name="app_board_member_search", methods={"GET"})
      */
-    public function searchAction(Request $request): Response
+    public function searchAction(Request $request, BoardMemberManager $manager): Response
     {
         $filter = new BoardMemberFilter();
         $filter->handleRequest($request);
@@ -41,7 +43,7 @@ class BoardMemberController extends Controller
             return $this->redirectToRoute('app_board_member_search');
         }
 
-        $results = $this->get('app.board_member.manager')->paginateMembers($filter, $this->getUser());
+        $results = $manager->paginateMembers($filter, $this->getUser());
 
         $filter->setToken($this->get('security.csrf.token_manager')->getToken(self::TOKEN_ID));
 
@@ -50,17 +52,17 @@ class BoardMemberController extends Controller
             'has_filter' => $request->query->has(BoardMemberFilter::PARAMETER_TOKEN),
             'results' => $results,
             'areas' => BoardMember::AREAS_CHOICES,
-            'roles' => $this->get('app.board_member.manager')->findRoles(),
+            'roles' => $manager->findRoles(),
         ]);
     }
 
     /**
      * @Route("/profils-sauvegardes", name="app_board_member_saved_profile", methods={"GET"})
      */
-    public function savedProfilAction()
+    public function savedProfilAction(BoardMemberManager $manager): Response
     {
-        $savedMembers = $this->get('app.board_member.manager')->findSavedMembers($this->getUser());
-        $statistics = $this->get('app.board_member.manager')->getStatistics($savedMembers);
+        $savedMembers = $manager->findSavedMembers($this->getUser());
+        $statistics = $manager->getStatistics($savedMembers);
 
         return $this->render('board_member/saved_profile.html.twig', [
             'results' => $savedMembers,
@@ -71,8 +73,11 @@ class BoardMemberController extends Controller
     /**
      * @Route("/recherche/message", name="app_board_member_message_search", methods={"GET", "POST"})
      */
-    public function sendMessageToSearchResultsAction(Request $request): Response
-    {
+    public function sendMessageToSearchResultsAction(
+        Request $request,
+        BoardMemberManager $manager,
+        BoardMemberMessageNotifier $notifier
+    ): Response {
         $filter = new BoardMemberFilter();
         $filter->handleRequest($request);
 
@@ -80,14 +85,14 @@ class BoardMemberController extends Controller
             return $this->redirectToRoute('app_board_member_search');
         }
 
-        $recipients = $this->get('app.board_member.manager')->searchMembers($filter, $this->getUser());
+        $recipients = $manager->searchMembers($filter, $this->getUser());
         $message = $this->createMessage($recipients);
 
         $form = $this->createForm(BoardMemberMessageType::class, $message);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->get('app.board_member.message_notifier')->sendMessage($message);
+            $notifier->sendMessage($message);
 
             $this->addFlash('info', 'board_member.message.success');
 
@@ -104,16 +109,19 @@ class BoardMemberController extends Controller
     /**
      * @Route("/profils-sauvegardes/message", name="app_board_member_message_saved_profile", methods={"GET", "POST"})
      */
-    public function sendMessageToSavedProfilesAction(Request $request): Response
-    {
-        $recipients = $this->get('app.board_member.manager')->findSavedMembers($this->getUser());
+    public function sendMessageToSavedProfilesAction(
+        Request $request,
+        BoardMemberManager $manager,
+        BoardMemberMessageNotifier $notifier
+    ): Response {
+        $recipients = $manager->findSavedMembers($this->getUser());
         $message = $this->createMessage($recipients->toArray());
 
         $form = $this->createForm(BoardMemberMessageType::class, $message);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->get('app.board_member.message_notifier')->sendMessage($message);
+            $notifier->sendMessage($message);
 
             $this->addFlash('info', 'board_member.message.success');
 
@@ -129,15 +137,18 @@ class BoardMemberController extends Controller
     /**
      * @Route("/message/{member}", name="app_board_member_message_member", methods={"GET", "POST"})
      */
-    public function sendMessageToMemberAction(Request $request, Adherent $member): Response
-    {
+    public function sendMessageToMemberAction(
+        Request $request,
+        Adherent $member,
+        BoardMemberMessageNotifier $notifier
+    ): Response {
         $message = $this->createMessage([$member]);
 
         $form = $this->createForm(BoardMemberMessageType::class, $message);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->get('app.board_member.message_notifier')->sendMessage($message);
+            $notifier->sendMessage($message);
 
             $this->addFlash('info', 'board_member.message.success');
 
@@ -158,7 +169,7 @@ class BoardMemberController extends Controller
     /**
      * @Route("/list/boardmember", name="app_board_add_profile_on_list", methods={"POST"})
      */
-    public function addBoardMemberOnListAction(Request $request)
+    public function addBoardMemberOnListAction(Request $request): Response
     {
         if (!$id = $request->request->getInt('boardMemberId')) {
             return new Response('', Response::HTTP_BAD_REQUEST);
@@ -182,7 +193,7 @@ class BoardMemberController extends Controller
     /**
      * @Route("/list/boardmember/{boardMemberId}", name="app_board_remove_profile_on_list", methods={"DELETE"})
      */
-    public function deleteBoardMemberOnListAction($boardMemberId)
+    public function deleteBoardMemberOnListAction($boardMemberId): Response
     {
         $boardMemberRepository = $this->getDoctrine()->getRepository(BoardMember::class);
 

@@ -158,7 +158,7 @@ trait ControllerTestTrait
 
     private function getMessages(string $queue): array
     {
-        $channel = self::$container->get('old_sound_rabbit_mq.connection.default')->channel();
+        $channel = static::$container->get('old_sound_rabbit_mq.connection.default')->channel();
         $messages = [];
 
         /** @var AMQPMessage $message */
@@ -209,20 +209,22 @@ trait ControllerTestTrait
 
     protected function init(string $host = 'app')
     {
-        self::$container = $this->getContainer();
-        $this->manager = self::$container->get('doctrine.orm.entity_manager');
-
-        // delete all scheduled emails
-        $this->getEmailRepository()->createQueryBuilder('e')->delete()->getQuery()->execute();
+        static::bootKernel();
 
         $this->hosts = [
-            'scheme' => self::$container->getParameter('router.request_context.scheme'),
-            'app' => self::$container->getParameter('app_host'),
-            'amp' => self::$container->getParameter('amp_host'),
-            'legislatives' => self::$container->getParameter('legislatives_host'),
+            'scheme' => static::$container->getParameter('router.request_context.scheme'),
+            'app' => static::$container->getParameter('app_host'),
+            'amp' => static::$container->getParameter('amp_host'),
+            'legislatives' => static::$container->getParameter('legislatives_host'),
         ];
 
         $this->client = $this->makeClient(['HTTP_HOST' => $this->hosts[$host]]);
+
+//        static::$container = $this->getContainer();
+        $this->manager = static::$container->get('doctrine.orm.entity_manager');
+
+        // delete all scheduled emails
+        $this->getEmailRepository()->createQueryBuilder('e')->delete()->getQuery()->execute();
     }
 
     protected function kill()
@@ -232,8 +234,8 @@ trait ControllerTestTrait
         $this->adherents = null;
         $this->hosts = [];
 
-        if (self::$container) {
-            self::$container = null;
+        if (static::$container) {
+            static::$container = null;
         }
     }
 

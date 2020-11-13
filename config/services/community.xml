@@ -21,7 +21,7 @@
         </service>
 
         <!-- Interactives -->
-        <service id="app.interactive.my_europe_processor_handler" class="App\Interactive\MyEuropeProcessorHandler">
+        <service id="App\Interactive\MyEuropeProcessorHandler">
             <argument type="service" id="app.my_europe.message_body_builder"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="app.mailer.transactional"/>
@@ -33,25 +33,20 @@
             <argument type="service" id="App\Repository\MyEuropeChoiceRepository"/>
         </service>
 
-        <service id="app.my_europe.serializer" class="App\Interactive\MyEuropeSerializer" />
+        <service id="App\Interactive\MyEuropeSerializer" />
 
         <!-- Facebook filters -->
-        <service id="app.facebook.profile_importer" class="App\Facebook\ProfileImporter">
-            <argument type="service" id="app.facebook.api" />
-            <argument type="service" id="App\Repository\FacebookProfileRepository" />
-        </service>
-
-        <service id="app.facebook.picture_importer" class="App\Facebook\PictureImporter">
+        <service id="App\Facebook\PictureImporter">
             <argument type="service" id="csa_guzzle.client.facebook_graph_api" />
             <argument type="service" id="cache.app" />
         </service>
 
-        <service id="app.facebook.picture_filterer" class="App\Facebook\PictureFilterer">
+        <service id="App\Facebook\PictureFilterer">
             <argument type="service" id="app.imagine" />
         </service>
 
-        <service id="app.facebook.picture_uploader" class="App\Facebook\PictureUploader">
-            <argument type="service" id="app.facebook.api" />
+        <service id="App\Facebook\PictureUploader">
+            <argument type="service" id="Facebook\Facebook" />
             <argument type="service" id="filesystem" />
             <argument>%kernel.cache_dir%</argument>
         </service>

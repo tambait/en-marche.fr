@@ -90,8 +90,12 @@ class CitizenActionController extends Controller
     /**
      * @Route("/{slug}/inscription", name="app_citizen_action_attend", methods={"GET", "POST"})
      */
-    public function attendAction(Request $request, CitizenAction $citizenAction, ?UserInterface $adherent): Response
-    {
+    public function attendAction(
+        Request $request,
+        CitizenAction $citizenAction,
+        ?UserInterface $adherent,
+        CitizenActionRegistrationCommandHandler $handler
+    ): Response {
         if ($adherent) {
             return $this->redirectToRoute('app_citizen_action_attend_adherent', ['slug' => $citizenAction->getSlug()]);
         }
@@ -123,7 +127,7 @@ class CitizenActionController extends Controller
         ;
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->get(CitizenActionRegistrationCommandHandler::class)->handle($command);
+            $handler->handle($command);
             $this->addFlash('info', 'citizen_action.registration.success');
 
             return $this->redirectToRoute('app_citizen_action_attend_confirmation', [
@@ -142,14 +146,17 @@ class CitizenActionController extends Controller
      * @Route("/{slug}/desinscription", name="app_citizen_action_unregistration", condition="request.isXmlHttpRequest()", methods={"GET", "POST"})
      * @Security("is_granted('UNREGISTER_CITIZEN_ACTION', citizenAction)")
      */
-    public function unregistrationAction(Request $request, CitizenAction $citizenAction): JsonResponse
-    {
+    public function unregistrationAction(
+        Request $request,
+        CitizenAction $citizenAction,
+        CitizenActionManager $manager
+    ): JsonResponse {
         if (!$this->isCsrfTokenValid('event.unregistration', $token = $request->request->get('token'))) {
             throw $this->createAccessDeniedException('Invalid CSRF protection token to unregister from the citizen action.');
         }
 
         try {
-            $this->get(CitizenActionManager::class)->unregisterFromCitizenAction($citizenAction, $this->getUser());
+            $manager->unregisterFromCitizenAction($citizenAction, $this->getUser());
         } catch (EntityNotFoundException $e) {
             return new JsonResponse(
                 ['error' => 'Impossible d\'exécuter la désinscription de l\'action citoyenne, votre inscription n\'est pas trouvée.'],

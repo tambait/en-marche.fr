@@ -50,6 +50,7 @@ use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Form\Type\ModelAutocompleteType;
+use Sonata\AdminBundle\Form\Type\ModelType;
 use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Sonata\DoctrineORMAdminBundle\Datagrid\ProxyQuery;
@@ -57,6 +58,7 @@ use Sonata\DoctrineORMAdminBundle\Filter\CallbackFilter;
 use Sonata\DoctrineORMAdminBundle\Filter\DateRangeFilter;
 use Sonata\DoctrineORMAdminBundle\Filter\ModelAutocompleteFilter;
 use Sonata\DoctrineORMAdminBundle\Filter\ModelFilter;
+use Sonata\Form\Type\DatePickerType;
 use Sonata\Form\Type\DateRangePickerType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -281,7 +283,7 @@ class AdherentAdmin extends AbstractAdmin
                         'Désactivé' => Adherent::DISABLED,
                     ],
                 ])
-                ->add('tags', 'sonata_type_model', [
+                ->add('tags', ModelType::class, [
                     'label' => 'Tags admin',
                     'multiple' => true,
                     'by_reference' => false,
@@ -323,7 +325,7 @@ class AdherentAdmin extends AbstractAdmin
                     'widget' => PhoneNumberType::WIDGET_COUNTRY_CHOICE,
                     'required' => false,
                 ])
-                ->add('birthdate', 'sonata_type_date_picker', [
+                ->add('birthdate', DatePickerType::class, [
                     'label' => 'Date de naissance',
                     'required' => false,
                 ])
@@ -472,7 +474,7 @@ HELP
                     'mapped' => false,
                     'help' => 'Laisser vide si l\'adhérent n\'est pas membre du Conseil.',
                 ])
-                ->add('boardMemberRoles', 'sonata_type_model', [
+                ->add('boardMemberRoles', ModelType::class, [
                     'expanded' => true,
                     'multiple' => true,
                     'btn_add' => false,
@@ -619,7 +621,7 @@ HELP
                 'mapping_type' => ClassMetadata::MANY_TO_MANY,
             ])
             ->add('canaryTester')
-            ->add('status', null, ['label' => 'Etat du compte'], 'choice', [
+            ->add('status', null, ['label' => 'Etat du compte'], ChoiceType::class, [
                 'choices' => [
                     'Activé' => Adherent::ENABLED,
                     'Désactivé' => Adherent::DISABLED,

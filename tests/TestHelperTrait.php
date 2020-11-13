@@ -100,21 +100,15 @@ use League\Flysystem\FilesystemInterface;
 use League\Glide\Server;
 use libphonenumber\PhoneNumber;
 use Symfony\Bridge\Doctrine\ManagerRegistry;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 trait TestHelperTrait
 {
-    /**
-     * @var ContainerInterface
-     */
-    protected static $container;
-
     /** @var Adherent[] */
     protected $adherents;
 
     public function get($id)
     {
-        return self::$container->get($id);
+        return static::$container->get($id);
     }
 
     public function assertMailCountRecipients(int $count, ?Email $mail): void
@@ -138,17 +132,17 @@ trait TestHelperTrait
 
     public function getManagerRegistry(): ManagerRegistry
     {
-        return self::$container->get('doctrine');
+        return static::$container->get('doctrine');
     }
 
     public function getStorage(): Filesystem
     {
-        return self::$container->get(FilesystemInterface::class);
+        return static::$container->get(FilesystemInterface::class);
     }
 
     public function getGlide(): Server
     {
-        return self::$container->get('app.glide');
+        return static::$container->get('app.glide');
     }
 
     public function getEntityManager($class): ObjectManager
@@ -378,7 +372,7 @@ trait TestHelperTrait
 
     public function getCommitteeFeedManager(): CommitteeFeedManager
     {
-        return self::$container->get(CommitteeFeedManager::class);
+        return static::$container->get(CommitteeFeedManager::class);
     }
 
     protected function getAdherent(string $uuid): ?Adherent

@@ -63,7 +63,7 @@ class ManagedUserRepositoryTest extends WebTestCase
     {
         parent::setUp();
 
-        self::$container = $this->getContainer();
+        static::$container = $this->getContainer();
         $this->managedUserRepository = $this->get(ManagedUserRepository::class);
         $this->referentTagRepository = $this->get(ReferentTagRepository::class);
     }

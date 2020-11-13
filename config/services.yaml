@@ -205,7 +205,7 @@ services:
             $replyToEmailAddress: '%procurations_reply_to_email%'
 
     Lexik\Bundle\PayboxBundle\Paybox\System\Cancellation\Request: '@lexik_paybox.request_cancellation_handler'
-    Sonata\Exporter\Exporter: '@sonata.exporter.exporter'
+    Lexik\Bundle\PayboxBundle\Paybox\System\Base\Request: '@lexik_paybox.request_handler'
 
     Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory: '@sensio_framework_extra.psr7.http_message_factory'
     Symfony\Bridge\PsrHttpMessage\HttpFoundationFactoryInterface: '@sensio_framework_extra.psr7.http_foundation_factory'
@@ -220,6 +220,8 @@ services:
     Symfony\Component\Security\Http\Logout\LogoutUrlGenerator: '@security.logout_url_generator'
 
     Sonata\AdminBundle\Builder\ShowBuilderInterface: '@sonata.admin.builder.orm_show'
+    Sonata\Exporter\Exporter: '@sonata.exporter.exporter'
+
 #    Sonata\AdminBundle\Model\ModelManagerInterface: '@sonata.admin.manager.orm'
 #    League\OAuth2\Server\Repositories\AccessTokenRepositoryInterface: '@App\OAuth\Store\AccessTokenStore'
 #

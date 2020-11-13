@@ -102,7 +102,7 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
-        <service id="app.security.authentication_utils" class="App\Security\AuthenticationUtils">
+        <service id="App\Security\AuthenticationUtils">
             <argument type="service" id="security.token_storage" />
         </service>
 

@@ -139,6 +139,7 @@ class DonationController extends Controller
         AdherentRepository $adherentRepository,
         NewsletterSubscriptionRepository $newsletterSubscriptionRepository,
         Donation $donation,
+        DonationRequestUtils $donationRequestUtils,
         string $status
     ): Response {
         $retryUrl = null;
@@ -147,7 +148,7 @@ class DonationController extends Controller
         if (!$successful) {
             $retryUrl = $this->generateUrl(
                 'donation_informations',
-                $this->get(DonationRequestUtils::class)->createRetryPayload($donation, $request)
+                $donationRequestUtils->createRetryPayload($donation, $request)
             );
         }
 

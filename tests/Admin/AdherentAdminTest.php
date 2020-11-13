@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\App\Controller\Admin;
+namespace Tests\App\Admin;
 
 use App\DataFixtures\ORM\LoadAdherentData;
 use App\Entity\Adherent;
@@ -15,7 +15,7 @@ use Tests\App\Controller\ControllerTestTrait;
  */
 class AdherentAdminTest extends WebTestCase
 {
-    private const ADHERENT_EDIT_URI_PATTERN = '/admin/app/adherent/%s/edit';
+    private const ADHERENT_EDIT_URI_PATTERN = '/admin/app/adherent/%d/edit';
 
     use ControllerTestTrait;
 

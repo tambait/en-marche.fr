@@ -7,7 +7,9 @@ use App\Entity\Event;
 use App\Entity\EventRegistration;
 use App\Event\EventCanceledHandler;
 use App\Event\EventCommand;
+use App\Event\EventCommandHandler;
 use App\Event\EventContactMembersCommand;
+use App\Event\EventContactMembersCommandHandler;
 use App\Event\EventRegistrationExporter;
 use App\Exception\BadUuidRequestException;
 use App\Exception\InvalidUuidException;
@@ -44,13 +46,13 @@ class EventManagerController extends Controller
      * @Route("/modifier", name="app_event_edit", methods={"GET", "POST"})
      * @Entity("event", expr="repository.findOneActiveBySlug(slug)")
      */
-    public function editAction(Request $request, Event $event): Response
+    public function editAction(Request $request, Event $event, EventCommandHandler $handler): Response
     {
         $form = $this->createForm(EventCommandType::class, $command = EventCommand::createFromEvent($event));
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->get('app.event.handler')->handleUpdate($event, $command);
+            $handler->handleUpdate($event, $command);
             $this->addFlash('info', 'committee.event.update.success');
 
             return $this->redirectToRoute('app_event_show', [
@@ -125,8 +127,11 @@ class EventManagerController extends Controller
     /**
      * @Route("/inscrits/contacter", name="app_event_contact_members", methods={"POST"})
      */
-    public function contactMembersAction(Request $request, Event $event): Response
-    {
+    public function contactMembersAction(
+        Request $request,
+        Event $event,
+        EventContactMembersCommandHandler $handler
+    ): Response {
         $registrations = $this->getRegistrations($request, $event, self::ACTION_CONTACT);
 
         if (!$registrations) {
@@ -143,7 +148,7 @@ class EventManagerController extends Controller
         ;
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->get('app.event.contact_members_handler')->handle($command);
+            $handler->handle($command);
             $this->addFlash('info', 'committee.event.contact.success');
 
             return $this->redirectToRoute('app_event_members', [

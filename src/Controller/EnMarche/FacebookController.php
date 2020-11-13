@@ -5,8 +5,13 @@ namespace App\Controller\EnMarche;
 use App\Entity\FacebookProfile;
 use App\Exception\BadUuidRequestException;
 use App\Exception\InvalidUuidException;
+use App\Facebook\PictureFilterer;
+use App\Facebook\PictureImporter;
+use App\Facebook\PictureUploader;
+use App\Facebook\ProfileImporter;
 use App\Repository\FacebookProfileRepository;
 use Facebook\Exceptions\FacebookSDKException;
+use Facebook\Facebook;
 use League\Flysystem\FilesystemInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -21,10 +26,17 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class FacebookController extends Controller
 {
     private $storage;
+    private $pictureImporter;
+    private $pictureFilterer;
 
-    public function __construct(FilesystemInterface $storage)
-    {
+    public function __construct(
+        FilesystemInterface $storage,
+        PictureImporter $pictureImporter,
+        PictureFilterer $pictureFilterer
+    ) {
         $this->storage = $storage;
+        $this->pictureImporter = $pictureImporter;
+        $this->pictureFilterer = $pictureFilterer;
     }
 
     /**
@@ -38,7 +50,7 @@ class FacebookController extends Controller
     /**
      * @Route("/connexion", name="app_facebook_auth", methods={"GET"})
      */
-    public function authAction(Request $request): RedirectResponse
+    public function authAction(Request $request, Facebook $fb): RedirectResponse
     {
         if ('on' !== $request->query->get('mentions_legales')) {
             $this->addFlash('info', 'Pour habiller votre photo aux couleurs d\'En Marche, vous devez nous autoriser à télécharger votre image de profil.');
@@ -46,7 +58,6 @@ class FacebookController extends Controller
             return $this->redirectToRoute('app_facebook_index');
         }
 
-        $fb = $this->get('app.facebook.api');
         $redirectUrl = $this->generateFacebookRedirectUrl('app_facebook_user_id', []);
 
         return $this->redirect($fb->getRedirectLoginHelper()->getLoginUrl($redirectUrl, ['public_profile', 'email']));
@@ -55,7 +66,7 @@ class FacebookController extends Controller
     /**
      * @Route("/import", name="app_facebook_user_id", methods={"GET"})
      */
-    public function importAction(Request $request): RedirectResponse
+    public function importAction(Request $request, ProfileImporter $importer): RedirectResponse
     {
         if (!$request->query->has('code')) {
             if ('access_denied' === $request->query->get('error')) {
@@ -66,7 +77,7 @@ class FacebookController extends Controller
         }
 
         try {
-            $fbProfile = $this->get('app.facebook.profile_importer')->import();
+            $fbProfile = $importer->import();
         } catch (FacebookSDKException $exception) {
             return $this->redirectToRoute('app_facebook_index');
         } catch (InvalidUuidException $e) {
@@ -93,7 +104,6 @@ class FacebookController extends Controller
             throw new BadUuidRequestException($e);
         }
 
-        $router = $this->get('router');
         $uuid = $fbProfile->getUuid()->toString();
 
         $urls = [];
@@ -104,8 +114,8 @@ class FacebookController extends Controller
             ];
 
             $urls[] = [
-                'data' => $router->generate('app_facebook_picture_build', $parameters),
-                'upload' => $router->generate('app_facebook_picture_upload_permission', $parameters),
+                'data' => $this->generateUrl('app_facebook_picture_build', $parameters),
+                'upload' => $this->generateUrl('app_facebook_picture_upload_permission', $parameters),
             ];
         }
 
@@ -133,7 +143,7 @@ class FacebookController extends Controller
     /**
      * @Route("/upload/permission", name="app_facebook_picture_upload_permission", methods={"GET"})
      */
-    public function uploadPicturePermissionAction(Request $request): Response
+    public function uploadPicturePermissionAction(Request $request, Facebook $fb): Response
     {
         try {
             if (!$fbProfile = $this->getFacebookProfileRepository()->findOneByUuid($request->query->get('uuid'))) {
@@ -147,7 +157,6 @@ class FacebookController extends Controller
             throw $this->createNotFoundException();
         }
 
-        $fb = $this->get('app.facebook.api');
         $redirectUrl = $this->generateFacebookRedirectUrl('app_facebook_picture_upload_execute', [
             'uuid' => $fbProfile->getUuid()->toString(),
             'filter' => $filterNumber,
@@ -159,7 +168,7 @@ class FacebookController extends Controller
     /**
      * @Route("/upload/executer", name="app_facebook_picture_upload_execute", methods={"GET"})
      */
-    public function uploadPictureExecuteAction(Request $request): Response
+    public function uploadPictureExecuteAction(Request $request, PictureUploader $uploader): Response
     {
         try {
             if (!$fbProfile = $this->getFacebookProfileRepository()->findOneByUuid($request->query->get('uuid'))) {
@@ -167,7 +176,7 @@ class FacebookController extends Controller
             }
 
             $filteredPictureData = $this->buildFilteredPicture($fbProfile, $request);
-            $response = $this->get('app.facebook.picture_uploader')->upload($filteredPictureData);
+            $response = $uploader->upload($filteredPictureData);
 
             $fbProfile->logAutoUploaded($response['access_token']);
 
@@ -212,10 +221,10 @@ class FacebookController extends Controller
             throw $this->createNotFoundException();
         }
 
-        $pictureData = $this->get('app.facebook.picture_importer')->import($fbProfile->getFacebookId());
+        $pictureData = $this->pictureImporter->import($fbProfile->getFacebookId());
         $filterData = $this->storage->read('static/watermarks/'.$filterNumber.'.png');
 
-        if (!$filteredPictureData = $this->get('app.facebook.picture_filterer')->applyFilter($pictureData, $filterData)) {
+        if (!$filteredPictureData = $this->pictureFilterer->applyFilter($pictureData, $filterData)) {
             throw $this->createNotFoundException();
         }
 

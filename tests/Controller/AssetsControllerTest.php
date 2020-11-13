@@ -148,7 +148,7 @@ class AssetsControllerTest extends WebTestCase
 
         $this->init();
 
-        $this->signature = SignatureFactory::create(self::$container->getParameter('kernel.secret'));
+        $this->signature = SignatureFactory::create(static::$container->getParameter('kernel.secret'));
     }
 
     protected function tearDown(): void
