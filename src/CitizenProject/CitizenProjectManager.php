@@ -46,16 +46,13 @@ class CitizenProjectManager
         RegistryInterface $registry,
         FilesystemInterface $storage,
         CitizenProjectAuthority $projectAuthority,
-        EventDispatcherInterface $eventDispatcher
+        EventDispatcherInterface $eventDispatcher,
+        Server $glide
     ) {
         $this->registry = $registry;
         $this->storage = $storage;
         $this->projectAuthority = $projectAuthority;
         $this->eventDispatcher = $eventDispatcher;
-    }
-
-    public function setGlide(Server $glide): void
-    {
         $this->glide = $glide;
     }
 

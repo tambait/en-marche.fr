@@ -9,23 +9,11 @@
         </defaults>
 
         <!-- CitizenProject -->
-        <service id="App\CitizenProject\CitizenProjectManager">
-            <call method="setGlide">
-                <argument type="service" id="app.glide" />
-            </call>
-        </service>
         <service id="App\MediaGenerator\Pdf\CitizenProjectTractGenerator" public="true">
             <argument type="service" id="knp_snappy.pdf"/>
         </service>
         <service id="App\MediaGenerator\Image\CitizenProjectCoverGenerator" public="true">
             <argument type="service" id="knp_snappy.image"/>
-        </service>
-
-        <!-- TurnkeyProject -->
-        <service id="App\TurnkeyProject\TurnkeyProjectManager">
-            <call method="setGlide">
-                <argument type="service" id="app.glide" />
-            </call>
         </service>
 
         <!-- Assessor -->

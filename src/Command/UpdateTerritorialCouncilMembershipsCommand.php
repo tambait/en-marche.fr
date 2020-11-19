@@ -44,7 +44,7 @@ class UpdateTerritorialCouncilMembershipsCommand extends Command
     protected function configure()
     {
         $this
-            ->addOption('limit', null, InputOption::VALUE_REQUIRED, null)
+            ->addOption('limit', null, InputOption::VALUE_REQUIRED)
             ->addOption('disable-mailchimp-sync', null, InputOption::VALUE_NONE)
         ;
     }

@@ -9,6 +9,7 @@ use App\BoardMember\BoardMemberMessageNotifier;
 use App\Entity\Adherent;
 use App\Entity\BoardMember\BoardMember;
 use App\Form\BoardMemberMessageType;
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -191,22 +192,19 @@ class BoardMemberController extends Controller
     }
 
     /**
-     * @Route("/list/boardmember/{boardMemberId}", name="app_board_remove_profile_on_list", methods={"DELETE"})
+     * @Route("/list/boardmember/{id}", name="app_board_remove_profile_on_list", methods={"DELETE"})
      */
-    public function deleteBoardMemberOnListAction($boardMemberId): Response
-    {
-        $boardMemberRepository = $this->getDoctrine()->getRepository(BoardMember::class);
+    public function deleteBoardMemberOnListAction(
+        EntityManagerInterface $entityManager,
+        BoardMember $boadMemberToDelete
+    ): Response {
+        $boardMemberRepository = $entityManager->getRepository(BoardMember::class);
 
-        $boadMemberToDelete = $boardMemberRepository->find($boardMemberId);
-        if (null === $boadMemberToDelete) {
-            return new Response('', Response::HTTP_NOT_FOUND);
-        }
         $currentBoardMember = $boardMemberRepository->findOneBy(['adherent' => $this->getUser()]);
-
         $currentBoardMember->removeSavedBoardMember($boadMemberToDelete);
 
-        $this->getDoctrine()->getManager()->persist($currentBoardMember);
-        $this->getDoctrine()->getManager()->flush();
+        $entityManager->persist($currentBoardMember);
+        $entityManager->flush();
 
         return new Response('', Response::HTTP_OK);
     }

@@ -12,6 +12,7 @@ use App\Timeline\TimelineImageFactory;
 use League\Flysystem\FilesystemInterface;
 use League\Glide\Filesystem\FileNotFoundException;
 use League\Glide\Responses\SymfonyResponseFactory;
+use League\Glide\Server;
 use League\Glide\Signatures\SignatureException;
 use League\Glide\Signatures\SignatureFactory;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -34,7 +35,7 @@ class AssetsController extends Controller
      * @Route("/assets/{path}", requirements={"path": ".+"}, name="asset_url", methods={"GET"})
      * @Cache(maxage=900, smaxage=900)
      */
-    public function assetAction(FilesystemInterface $storage, string $path, Request $request)
+    public function assetAction(Server $glide, FilesystemInterface $storage, string $path, Request $request)
     {
         $parameters = $request->query->all();
 
@@ -60,7 +61,6 @@ class AssetsController extends Controller
             ]);
         }
 
-        $glide = $this->get('app.glide');
         $glide->setResponseFactory(new SymfonyResponseFactory($request));
 
         try {
@@ -114,9 +114,8 @@ class AssetsController extends Controller
      * @Route("/algolia/{type}/{slug}", requirements={"type": "proposal|custom|article|clarification"}, methods={"GET"})
      * @Cache(maxage=900, smaxage=900)
      */
-    public function algoliaAction(Request $request, string $type, string $slug)
+    public function algoliaAction(Server $glide, Request $request, string $type, string $slug)
     {
-        $glide = $this->get('app.glide');
         $glide->setResponseFactory(new SymfonyResponseFactory($request));
 
         try {

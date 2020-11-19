@@ -142,7 +142,7 @@ trait TestHelperTrait
 
     public function getGlide(): Server
     {
-        return static::$container->get('app.glide');
+        return static::$container->get(Server::class);
     }
 
     public function getEntityManager($class): ObjectManager

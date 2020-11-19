@@ -2,7 +2,6 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\TonMacronFriendInvitation;
 use App\Repository\TonMacronChoiceRepository;
 use App\Repository\TonMacronFriendInvitationRepository;
 use App\TonMacron\TonMacronSerializer;
@@ -40,10 +39,10 @@ class AdminTonMacronController extends Controller
      * @Route("/export/invitations", name="app_admin_tonmacron_export_invitations", methods={"GET"})
      * @Security("has_role('ROLE_ADMIN_TON_MACRON')")
      */
-    public function exportInvitationsAction(): Response
+    public function exportInvitationsAction(TonMacronFriendInvitationRepository $repository): Response
     {
         return $this->render('admin/ton_macron/invitation_export.html.twig', [
-            'total_count' => $this->getDoctrine()->getRepository(TonMacronFriendInvitation::class)->countForExport(),
+            'total_count' => $repository->countForExport(),
             'csv_header' => implode(',', [
                 'id',
                 'friend_firstName',

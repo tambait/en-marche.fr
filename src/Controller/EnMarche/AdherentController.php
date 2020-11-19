@@ -37,6 +37,7 @@ use App\Repository\SummaryRepository;
 use App\Search\SearchParametersFilter;
 use App\Search\SearchResultsProvidersManager;
 use App\Security\Http\Session\AnonymousFollowerSession;
+use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Exception\ConnectException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -236,8 +237,12 @@ class AdherentController extends Controller
     /**
      * @Route("/contacter/{uuid}", name="app_adherent_contact", requirements={"uuid": "%pattern_uuid%"}, methods={"GET", "POST"})
      */
-    public function contactAction(Request $request, Adherent $adherent, ContactMessageHandler $handler): Response
-    {
+    public function contactAction(
+        Request $request,
+        Adherent $adherent,
+        ContactMessageHandler $handler,
+        EntityManagerInterface $entityManager
+    ): Response {
         $fromType = $request->query->get('from');
         $fromId = $request->query->get('id');
         $from = null;
@@ -245,13 +250,13 @@ class AdherentController extends Controller
         try {
             if ($fromType && $fromId) {
                 if ('committee' === $fromType) {
-                    $from = $this->getDoctrine()->getRepository(Committee::class)->findOneByUuid($fromId);
+                    $from = $entityManager->getRepository(Committee::class)->findOneByUuid($fromId);
                 } elseif ('citizen_project' === $fromType) {
-                    $from = $this->getDoctrine()->getRepository(CitizenProject::class)->findOneByUuid($fromId);
+                    $from = $entityManager->getRepository(CitizenProject::class)->findOneByUuid($fromId);
                 } elseif ('territorial_council' === $fromType || 'political_committee' === $fromType) {
                     $from = true;
                 } else {
-                    $from = $this->getDoctrine()->getRepository(Event::class)->findOneByUuid($fromId);
+                    $from = $entityManager->getRepository(Event::class)->findOneByUuid($fromId);
                 }
             }
         } catch (InvalidUuidException $e) {

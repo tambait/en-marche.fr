@@ -2,9 +2,10 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\MyEuropeChoice;
 use App\Entity\MyEuropeInvitation;
 use App\Interactive\MyEuropeSerializer;
+use App\Repository\MyEuropeChoiceRepository;
+use App\Repository\MyEuropeInvitationRepository;
 use Knp\Bundle\SnappyBundle\Snappy\Response\SnappyResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -24,10 +25,9 @@ class AdminMyEuropeController extends Controller
     /**
      * @Route("/export/choices", name="app_admin_myeurope_export_choices", methods={"GET"})
      */
-    public function exportChoicesAction(MyEuropeSerializer $serializer): Response
+    public function exportChoicesAction(MyEuropeSerializer $serializer, MyEuropeChoiceRepository $repository): Response
     {
-        $choices = $this->getDoctrine()->getRepository(MyEuropeChoice::class)->findAll();
-        $exported = $serializer->serializeChoices($choices);
+        $exported = $serializer->serializeChoices($repository->findAll());
 
         return new SnappyResponse($exported, 'my-europe-choices.csv', 'text/csv');
     }
@@ -35,10 +35,10 @@ class AdminMyEuropeController extends Controller
     /**
      * @Route("/export/invitations", name="app_admin_myeurope_export_invitations", methods={"GET"})
      */
-    public function exportInvitationsAction(): Response
+    public function exportInvitationsAction(MyEuropeInvitationRepository $repository): Response
     {
         return $this->render('admin/interactive/invitation_export.html.twig', [
-            'total_count' => $this->getDoctrine()->getRepository(MyEuropeInvitation::class)->countForExport(),
+            'total_count' => $repository->countForExport(),
             'csv_header' => implode(',', [
                 'id',
                 'friend_firstName',
