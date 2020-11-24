@@ -17,12 +17,25 @@ use Symfony\Component\Translation\TranslatorInterface;
 
 class ZoneController extends AbstractController
 {
-    private const MAX_AUTOCOMPLETE_SUGGESTIONS = 25;
+    private const SUGGESTIONS_PER_TYPE = 5;
+
+    private const TYPES = [
+        Zone::CUSTOM,
+        Zone::FOREIGN_DISTRICT,
+        Zone::COUNTRY,
+        Zone::CONSULAR_DISTRICT,
+        Zone::REGION,
+        Zone::DEPARTMENT,
+        Zone::CITY,
+        Zone::DISTRICT,
+        Zone::CITY_COMMUNITY,
+        Zone::CANTON,
+    ];
 
     use AccessDelegatorTrait;
 
     /**
-     * @Route("/zone/autocompletion", name="api_zone_autocomplete", condition="request.isXmlHttpRequest()", methods={"GET"})
+     * @Route("/zone/autocompletion", name="api_zone_autocomplete", methods={"GET"})
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      */
     public function autocomplete(
@@ -33,13 +46,14 @@ class ZoneController extends AbstractController
         $term = (string) $request->query->get('q', '');
         $space = (string) $request->query->get('space', '');
 
-        $max = (int) $request->query->get('page_limit', self::MAX_AUTOCOMPLETE_SUGGESTIONS);
-        $max = min($max, self::MAX_AUTOCOMPLETE_SUGGESTIONS);
+        $max = (int) $request->query->get('page_limit', self::SUGGESTIONS_PER_TYPE);
+        $max = min($max, self::SUGGESTIONS_PER_TYPE);
 
         $user = $this->getMainUser($request->getSession());
         $managedZones = $this->getManagedZones($user, $space);
 
-        $zones = $repository->searchByTermAndManagedZones($term, $managedZones, $max);
+        $zones = $repository->searchByTermAndManagedZonesGroupedByType($term, $managedZones, self::TYPES, $max);
+
         $results = $this->normalizeZoneForSelect2($translator, $zones);
 
         return new JsonResponse([
@@ -103,7 +117,7 @@ class ZoneController extends AbstractController
      */
     private function normalizeZoneForSelect2(TranslatorInterface $translator, array $zones): array
     {
-        $results = [];
+        $results = array_fill_keys(self::TYPES, null);
 
         foreach ($zones as $zone) {
             $type = $zone->getType();
@@ -122,6 +136,6 @@ class ZoneController extends AbstractController
             ];
         }
 
-        return array_values($results);
+        return array_values(array_filter($results));
     }
 }
