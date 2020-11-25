@@ -59,21 +59,33 @@ class TerritorialCouncilRepository extends ServiceEntityRepository
         $zones = [];
         array_walk($mandates, function (Mandate $mandate) use (&$zones) {
             $zone = $mandate->getGeoZone();
-            $zones[] = $zone;
 
-            if ($zone->isConsularDistrict()) {
-                $zones = array_merge($zones, $zone->getParentsOfType(Zone::FOREIGN_DISTRICT));
-            }
-
-            if (\in_array($zone->getType(), [Zone::BOROUGH, Zone::CITY, Zone::CANTON, Zone::DISTRICT])) {
-                $zones = array_merge($zones, $zone->getParentsOfType(Zone::DEPARTMENT));
+            switch ($zone->getType()) {
+                case Zone::BOROUGH:
+                case Zone::DISTRICT:
+                    $zones[] = $zone;
+                    $zones = array_merge($zones, $zone->getParentsOfType(Zone::DEPARTMENT));
+                    break;
+                case Zone::CITY:
+                case Zone::CITY_COMMUNITY:
+                case Zone::CANTON:
+                    $zones = array_merge($zones, $zone->getParentsOfType(Zone::DEPARTMENT));
+                    break;
+                case Zone::DEPARTMENT:
+                case Zone::REGION:
+                case Zone::FOREIGN_DISTRICT:
+                    $zones[] = $zone;
+                    break;
+                case Zone::CONSULAR_DISTRICT:
+                case Zone::COUNTRY:
+                    $zones = array_merge($zones, $zone->getParentsOfType(Zone::FOREIGN_DISTRICT));
+                    break;
             }
         });
 
         return $this->createQueryBuilder('tc')
-            ->leftJoin('tc.referentTags', 'tag')
-            ->leftJoin('tag.zone', 'zone')
-            ->orWhere('zone IN (:zones)')
+            ->leftJoin('tc.zones', 'zone')
+            ->where('zone IN (:zones)')
             ->setParameter('zones', $zones)
             ->getQuery()
             ->getResult()
